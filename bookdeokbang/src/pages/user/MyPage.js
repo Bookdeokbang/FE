@@ -110,7 +110,7 @@ const MyPage = () => {
                 </Box>
                 <Box>
                     <Link to="/search">
-                        <Font_Content>최근 검색 내역</Font_Content>
+                        <Font_Content> - 최근 검색 내역</Font_Content>
                     </Link>
                 </Box>
                 <Box>
@@ -118,12 +118,12 @@ const MyPage = () => {
                 </Box>
                 <Box>
                     <Link to="/profile">
-                        <Font_Content>회원 정보 보기</Font_Content>
+                        <Font_Content> - 회원 정보 보기</Font_Content>
                     </Link>
                 </Box>
                 <Box>
                     <Link to="/withdraw">
-                        <Font_Content>서비스 탈퇴</Font_Content>
+                        <Font_Content> - 서비스 탈퇴</Font_Content>
                     </Link>
                 </Box>
                 <Box>

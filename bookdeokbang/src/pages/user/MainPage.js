@@ -8,6 +8,10 @@ import ContactsIcon from '@mui/icons-material/ImportContacts';
 import { Link } from 'react-router-dom';
 import { TokenAxios } from "../../apis/CommonAxios";
 import { useForm } from "react-hook-form";
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 const Base = styled.div`
     width: 100%;
@@ -36,10 +40,10 @@ const Container_Head = styled.div`
 
 const WhiteBox1 = styled.div`
     width: 100%;
-    height: 150px;
+    height: 110px;
     background-color: #fff;
     margin-bottom: 15px;
-    border: 0.5px solid ${theme.colors.black};
+    border-radius: 8px;
 `;
 
 const Spacer = styled.div`
@@ -50,7 +54,7 @@ const Spacer = styled.div`
 
 const WhiteBox2 = styled.div`
     width: 100%;
-    height: 100px;
+    height: 120px;
     background-color: #fff;
     margin-bottom: 20px;
     border-radius: 8px;
@@ -65,6 +69,8 @@ const GrayBox = styled.div`
     justify-content: flex-start;
     align-items: center;
     padding-left: 10px;
+    border-radius: 8px;
+
 `;
 
 const InstructionText = styled.h3`
@@ -103,7 +109,7 @@ const Menu = styled.div`
 `;
 
 const MenuItem = styled.h2`
-    font-size: 13px;
+    font-size: 15px;
     font-family: 'Logo';
     margin: 0;
     text-align: right;
@@ -144,6 +150,10 @@ const MainPage = () => {
     const { handleSubmit } = useForm();
     const navigate = useNavigate();
     const [selectedImage, setSelectedImage] = useState(null);
+    const [words, setWords] = useState([]);
+    const [selectedWords, setSelectedWords] = useState([]);
+    const [notices, setNotices] = useState([]);
+    const [selectedNotice, setSelectedNotice] = useState(null);
 
     const handleGalleryImage = () => {
         const input = document.createElement('input');
@@ -151,7 +161,7 @@ const MainPage = () => {
         input.accept = 'image/*';
         input.onchange = (e) => {
             const file = e.target.files[0];
-            handleSubmit(() => handleImageSubmit(file))(); // 바로 파일 객체를 전달하도록 수정
+            handleSubmit(() => handleImageSubmit(file))();
         };
         input.click();
     };
@@ -183,8 +193,9 @@ const MainPage = () => {
             console.log('Response:', res);
     
             if (res.data ) {
-                console.log('Navigating to /ocr'); 
-                navigate(`/ocr`);
+                const sentenceId = res.data.result;
+                console.log('sentence ID: ', sentenceId);
+                navigate(`/analyze/${sentenceId}`);
             }
         } catch (e) {
             console.log(e);
@@ -194,11 +205,55 @@ const MainPage = () => {
     const fetchWords = async () => {
         try {
             const response = await TokenAxios.get(`${API_BASE_URL}/v1/words/all`);
-            //console.log(response.data.result); // API 응답 데이터 확인
+            console.log(response.data.result); // API 응답 데이터 확인
+            const wordsData = response.data.result;
+            setWords(wordsData);
+            const shuffledWords = wordsData.sort(() => 0.5 - Math.random());
+            setSelectedWords(shuffledWords.slice(0, 3));
         } catch (error) {
             console.error("Error fetching words:", error);
         }
     };
+
+   
+
+    useEffect(() => {
+        const fetchNotices = async () => {
+            try {
+                const res = await TokenAxios.get(`${API_BASE_URL}/v1/notices/all`);
+                setNotices(res.data.result);
+            } catch (error) {
+                console.error("Error fetching notices:", error);
+            }
+        };
+        fetchNotices();
+    }, [API_BASE_URL]);
+
+    const handleNoticeClick = async (noticeId) => {
+        try {
+            const res = await TokenAxios.get(`${API_BASE_URL}/v1/notices/${noticeId}`);
+            setSelectedNotice(res.data.result);
+            handleModalOpen(res.data.result);
+        } catch (error) {
+            console.error("공지사항 detail 가져오기 실패:", error);
+        }
+    };
+
+    const handleModalOpen = (notice) => {
+        MySwal.fire({
+            title: <strong>{notice.title}</strong>,
+            html: (
+                <div>
+                    <p><strong>Category:</strong> {notice.category}</p>
+                    <p><strong>Content:</strong> {notice.content}</p>
+                    <p><strong>Updated At:</strong> {notice.updated_at}</p>
+                </div>
+            ),
+            showCloseButton: true,
+        });
+    };
+
+
 
     useEffect(() => {
         fetchWords();
@@ -225,18 +280,20 @@ const MainPage = () => {
                 </Container_Head>
 
                 <WhiteBox1>
-                    <Info>공지사항 공지사항 공지사항</Info>
-                    <Info>공지사항 공지사항 공지사항</Info>
-                    <Info>공지사항 공지사항 공지사항</Info>
-                    <Info>공지사항 공지사항 공지사항</Info>
+                    {notices.slice(0, 3).map((notice, index) => (
+                        <Info key={index} onClick={() => handleNoticeClick(notice.noticeId)}>
+                            {notice.title}
+                        </Info>
+                    ))}
                 </WhiteBox1>
 
                 <Spacer>
                     <Voca>Today's Vocabulary</Voca>
                 </Spacer>
                 <WhiteBox2>
-                    <Info>오늘의 영단어</Info>
-                    <Info>보여주는 곳</Info>
+                    {selectedWords.map((word, index) => (
+                        <Info key={index}>{word.name}: {word.meaning}</Info>
+                    ))}
                 </WhiteBox2>
                 
                 <GrayBox>

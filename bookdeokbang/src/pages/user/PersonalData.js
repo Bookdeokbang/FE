@@ -27,8 +27,9 @@ const Container = styled.div`
 const CustomButton = styled(Button)`
     background-color: #00000;
     color: #000000;
+    font-family: Logo;
     &:hover {
-        background-color: #FFD465;
+        background-color: transparent;
     }
     width: 150px;
     height: 50px;
@@ -88,7 +89,7 @@ const PersonalData = () => {
                 <Font_Title>개인정보 처리 방침</Font_Title>
             </Title>
             <ContentBox/> 
-            <Link to="/main">
+            <Link to="/question">
                 <CustomButton>
                     돌아가기
                 </CustomButton>

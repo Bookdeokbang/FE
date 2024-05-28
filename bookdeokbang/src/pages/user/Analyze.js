@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import theme from '../../styles/commonTheme';
 import { Link } from 'react-router-dom';
 import { TokenAxios } from '../../apis/CommonAxios';
 import { Button } from '@mui/material';
+import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Base = styled.div`
     width: 100%;
@@ -67,8 +69,9 @@ const CustomButton = styled(Button)`
     background-color: #00000;
     color: #000000;
     &:hover {
-        background-color: #ffd465;
+        background-color: transparent;
     }
+    font-family: 'Logo';
     width: 150px;
     height: 50px;
     font-size: 15px;
@@ -76,29 +79,36 @@ const CustomButton = styled(Button)`
 `;
 
 const Font_Body2 = styled.h1`
-    font-size: 20px;
-    font-family: 'Logo';
+    font-size: 16px;
+    font-family: 'engLogo';
     margin: 5px;
     text-align: center;
 `;
 
 const Analyze = () => {
     const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-    const fetchData = async (sentenceId) => {
-        console.log(sentenceId);
-        try {
-            const res = await TokenAxios.get(`${API_BASE_URL}/v1/sentences/123/info`); // "123" 대신에 실제 문장의 ID를 사용
-            const data= res.data.result;
-            console.log(data)
-        } 
-        catch (error) {
-            console.error('Error fetching sentence info:', error);
+    const { sentenceId } = useParams();
+    const [analysisResult, setAnalysisResult] = useState([]);
+    const [grammar, setGrammar] = useState(null);
+    const [difficulty, setDifficulty] = useState(null);
+    const navigate = useNavigate();
+
+     useEffect(() => {
+        const fetchAnalysis = async () => {
+            try {
+                const response = await TokenAxios.get(`${API_BASE_URL}/v1/sentences/${sentenceId}/info`);
+                setAnalysisResult(response.data.result);
+                setGrammar(response.data.result.grammar);
+                setDifficulty(response.data.result.difficulty);
+            } catch (error) {
+                console.error("Error fetching analysis data:", error);
+            }
+        };
+
+        if (sentenceId) {
+            fetchAnalysis();
         }
-    };
-    
-    useEffect(() => {
-        fetchData();
-    }, []);
+    }, [sentenceId, API_BASE_URL]);
 
     return (
         <Base>
@@ -107,15 +117,25 @@ const Analyze = () => {
                     <Font_Title>분석 결과</Font_Title>
                 </Title>
                 <WhiteBox1>
-                    {/* 여기에 결과 표시 */}
+                    <Font_Body2>문장: {analysisResult.content}</Font_Body2>
+                    <Font_Body2>난이도: {analysisResult.difficulty}</Font_Body2>
+                    <Font_Body2>문법: {analysisResult.grammar}</Font_Body2>
                 </WhiteBox1>
                 <SaveBox>
-                    <Link to="/similar">
-                        <CustomButton>유사 문장 추천받기</CustomButton>
-                    </Link>
+                    
+                <CustomButton onClick={() => navigate(`/similar/${grammar}/${difficulty}`)}>
+                    유사 문장 추천받기
+                </CustomButton>
+                    
                 </SaveBox>
                 <SaveBox>
-                    <Link to="/studynote">
+                <Link to={{
+                        pathname: `/studydetail/${analysisResult.content}&${sentenceId}`,
+                        state: { content: analysisResult.content, sentenceId: sentenceId
+                        }
+                        
+                    }}>
+
                         <CustomButton>학습 노트 저장하기</CustomButton>
                     </Link>
                 </SaveBox>
