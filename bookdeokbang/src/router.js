@@ -75,8 +75,4 @@ const Router = () => {
     );
 };
 
-<<<<<<< HEAD
 export default Router;
-=======
-export default Router;
->>>>>>> origin/main
