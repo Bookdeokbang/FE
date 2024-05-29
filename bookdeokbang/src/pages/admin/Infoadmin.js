@@ -13,6 +13,7 @@ import Swal from 'sweetalert2';
 import { TokenAxios } from "../../apis/CommonAxios";
 import { useForm } from "react-hook-form";
 import axios from "axios";
+import Pagination from '@mui/material/Pagination';
 
 const PageContainer = styled.div`
     position: relative;
@@ -94,6 +95,14 @@ const SearchButton = styled(Button)`
     border-radius: 4px;
     cursor: pointer;
 `;
+const StyledLink = styled(Link)`
+color: #000; /* 링크 색상을 항상 검정색으로 설정 */
+text-decoration: none; /* 링크의 밑줄을 제거 */
+
+&:hover {
+    color: #000; /* 호버 시에도 검정색 유지 */
+}
+`;
 
 const NoticeButton = styled(Button)`
     padding: 10px 20px;
@@ -109,10 +118,13 @@ const Infoadmin = () => {
     const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const [searchTerm, setSearchTerm] = useState("");
     const [rows, setRows] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage] = useState(8)
     const { register, handleSubmit, setValue } = useForm();
 
-    
-
+    useEffect(() => {
+        fetchNotices(currentPage);
+    }, [currentPage]);
     
     const fetchNotices = async () => {
         try {
@@ -271,6 +283,15 @@ const Infoadmin = () => {
         });
     };
 
+   // getCurrentRows 함수 수정
+const getCurrentRows = () => {
+    const indexOfLastRow = currentPage * rowsPerPage;
+    const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+    return rows.slice(indexOfFirstRow, indexOfLastRow);
+};
+  const handlePageChange = (event, value) => {
+        setCurrentPage(value);
+    };
     return (
         <PageContainer>
             <SearchContainer>
@@ -301,6 +322,14 @@ const Infoadmin = () => {
                     </tbody>
                 </StyledTable>
             </TableContainer>
+            <Pagination
+                count={Math.ceil(rows.length / rowsPerPage)}
+                page={currentPage}
+                onChange={handlePageChange}
+                shape="rounded"
+                variant="outlined"
+            />
+            
             <Link to="/mainadmin">
                 <Gramary>Gramary</Gramary>
             </Link>
@@ -312,12 +341,12 @@ const Infoadmin = () => {
                     spacing={0}
                     variant="soft"
                 >
-                    <Link to="/modifyadmin">
+                    <StyledLink to="/modifyadmin">
                         <Button>관리자 정보 수정</Button>
-                    </Link>
-                    <Link to="/">
+                    </StyledLink>
+                    <StyledLink to="/">
                         <Button>로그아웃</Button>
-                    </Link>
+                    </StyledLink>
                 </ButtonGroup>
             </TopRightGroup>
             <DropdownGroup>

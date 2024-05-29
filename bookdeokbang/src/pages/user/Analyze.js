@@ -44,10 +44,10 @@ const WhiteBox1 = styled.div`
 const SaveBox = styled.div`
     width: 100%;
     height: 50px;
-    background-color: #fff;
+    background-color: transparent; /* 배경색 설정 */
     margin-bottom: 15px;
     border-radius: 8px;
-    border: 1px solid ${theme.colors.black};
+
     box-sizing: border-box;
     display: flex;
     align-items: center;
@@ -67,16 +67,31 @@ const Font_Title = styled.h1`
 `;
 
 const CustomButton = styled(Button)`
-    background-color: #000;
-    color: #fff;
+    background-color: transparent; /* 배경색 설정 */
+    color: #000; /* 글씨 색상 설정 */
     &:hover {
-        background-color: #333;
+        background-color: transparent; /* 호버 시 배경색을 투명하게 설정 */
+        color: #000; /* 호버 시 글씨 색상을 검정으로 설정 */
     }
     font-family: 'Logo';
     width: 150px;
     height: 50px;
     font-size: 15px;
     align-self: center;
+`;
+
+const CustomButton2 = styled(Button)`
+    background-color: #000;
+    color: #ffffff; /* 검정색으로 설정 */
+    &:hover {
+        background-color: #fff;
+    }
+    font-family: 'Logo';
+    width: 100%;
+    height: 50px;
+    font-size: 15px;
+    align-self: center;
+    margin-top: 10px;
 `;
 
 const Font_Body2 = styled.h1`
@@ -147,7 +162,7 @@ const Analyze = () => {
                 </SaveBox>
                 <SaveBox>
                     <Link to="/main">
-                        <CustomButton>분석 종료</CustomButton>
+                        <CustomButton2>분석 종료</CustomButton2>
                     </Link>
                 </SaveBox>
             </Container>

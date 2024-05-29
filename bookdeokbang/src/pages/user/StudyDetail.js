@@ -69,15 +69,16 @@ const SaveBox = styled.div`
 `;
 
 const CustomButton = styled(Button)`
-    background-color: transparent;
-    margin-top: -20px;
-    color: #000000;
+    background-color: transparent; /* 배경색 설정 */
+    color: #000; /* 글씨 색상 설정 */
     &:hover {
-        background-color: transparent;
+        background-color: transparent; /* 호버 시 배경색을 투명하게 설정 */
+        color: #000; /* 호버 시 글씨 색상을 검정으로 설정 */
     }
+    font-family: 'Logo';
     width: 150px;
     height: 50px;
-    font-size: 20px;
+    font-size: 15px;
     align-self: center;
 `;
 

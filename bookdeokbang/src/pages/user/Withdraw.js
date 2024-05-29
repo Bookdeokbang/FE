@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import theme from '../../styles/commonTheme';
 import Button from '@mui/material/Button';
-import { useNavigate} from "react-router-dom"; 
+import { useNavigate } from "react-router-dom";
 import { TokenAxios } from "../../apis/CommonAxios";
+import korlogo from "../../assets/images/korlogo.png";
 
 const Base = styled.div`
     width: 100%;
@@ -26,17 +27,13 @@ const Container = styled.div`
     align-items: center;
 `;
 
-const ProfileBox = styled.div`
-    width: 200px;
-    height: 200px;
-    background-color: #F0F0F0;
+const ProfileBox = styled.img`
+    width: 300px;
+    height: 300px;
     margin-top: 20px;
     margin-bottom: 20px;
     border-radius: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid ${theme.colors.black};
+
 `;
 
 const Title = styled.div`
@@ -78,9 +75,7 @@ const Withdraw = () => {
                 <Title>
                     <Font_Title>탈퇴하시겠습니까?</Font_Title>
                 </Title>
-                <ProfileBox>
-                    {/* 프로필 이미지 */}
-                </ProfileBox>
+                <ProfileBox src={korlogo} alt="프로필 이미지" />       
                 <Button variant="contained" onClick={handleWithdrawal} sx={{ backgroundColor: '#000', color: '#fff' }}>
                     <Font_Content>탈퇴하기</Font_Content>
                 </Button>

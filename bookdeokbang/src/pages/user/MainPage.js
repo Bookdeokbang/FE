@@ -75,11 +75,6 @@ const GrayBox = styled.div`
 
 `;
 
-const InstructionText = styled.h3`
-    font-size: 16px;
-    font-family: 'Logo';
-    margin: 0;
-`;
 
 const SmallWhiteBox = styled.div`
     width: 80px;
@@ -108,6 +103,7 @@ const SmallBlackBox = styled.div`
 const Menu = styled.div`
     display: flex;
     align-items: center;
+   
 `;
 
 const MenuItem = styled.h2`
@@ -118,6 +114,16 @@ const MenuItem = styled.h2`
     width: fit-content;
     padding: 5px;
     margin-left: auto;
+    color:#000;
+`;
+
+const StyledLink = styled(Link)`
+    color: #000; /* 링크 색상을 항상 검정색으로 설정 */
+    text-decoration: none; /* 링크의 밑줄을 제거 */
+    
+    &:hover {
+        color: #000; /* 호버 시에도 검정색 유지 */
+    }
 `;
 
 const Title = styled.h2`
@@ -282,10 +288,10 @@ const MainPage = () => {
                     <Title>Gramary</Title>
                     <Menu>
                         <MenuItem>
-                            <Link to="/mypage">마이페이지</Link>
+                        <StyledLink to="/mypage">마이페이지</StyledLink>
                         </MenuItem>
                         <MenuItem>
-                            <Link to="/info">공지사항</Link>
+                        <StyledLink to="/info">공지사항</StyledLink>
                         </MenuItem>
                     </Menu>
                 </Container_Head>

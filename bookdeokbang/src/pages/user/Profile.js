@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import theme from '../../styles/commonTheme';
+import { Link } from 'react-router-dom';
 
 const Base = styled.div`
     width: 100%;
@@ -122,7 +123,10 @@ const Profile = () => {
                 <Font_Content>이메일</Font_Content>
                 <InputBox type="email" /> {/* email type의 input 상자 */}
             </Bottom>
-            <Button>돌아가기</Button> {/* 저장하기 버튼 */}
+            <Link to="/mypage">
+            <Button>돌아가기</Button> 
+</Link>
+          
         </Container>
     </Base>
     );

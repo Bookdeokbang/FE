@@ -71,16 +71,20 @@ const InputWrapper = styled.div`
 `;
 
 const CustomButton = muiStyled(Button)({
-  backgroundColor: "#FFD465",
-  color: "#000000",
+  
+  backgroundColor: "#000",
+  color:  "#ffffff",
   "&:hover": {
-    backgroundColor: "#FFD465",
+    backgroundColor: "#fff",
   },
   width: "150px",
   height: "50px",
   fontSize: "20px",
   alignSelf: "center",
 });
+
+
+ 
 
 const SignUp = () => {
   const {

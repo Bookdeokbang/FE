@@ -53,6 +53,14 @@ const TableContainer = styled.div`
     margin: 20px;
     overflow-x: auto;
 `;
+const StyledLink = styled(Link)`
+    color: #000; /* 링크 색상을 항상 검정색으로 설정 */
+    text-decoration: none; /* 링크의 밑줄을 제거 */
+    
+    &:hover {
+        color: #000; /* 호버 시에도 검정색 유지 */
+    }
+`;
 
 const StyledTable = styled(Table)`
     width: 100%;
@@ -110,12 +118,12 @@ const Aiadmin = () => {
                     spacing={0}
                     variant="soft"
                 >
-                    <Link to="/modifyadmin">
+                    <StyledLink to="/modifyadmin">
                         <Button>관리자 정보 수정</Button>
-                    </Link>
-                    <Link to="/">
+                    </StyledLink>
+                    <StyledLink to="/">
                         <Button>로그아웃</Button>
-                    </Link>
+                    </StyledLink>
                 </ButtonGroup>
             </TopRightGroup>
             <DropdownGroup>
