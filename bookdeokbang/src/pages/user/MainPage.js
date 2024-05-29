@@ -12,6 +12,7 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import LoadingComponent from "./LoadingComponent";
 
+
 const MySwal = withReactContent(Swal);
 
 const Base = styled.div`
@@ -155,8 +156,8 @@ const MainPage = () => {
     const [selectedWords, setSelectedWords] = useState([]);
     const [notices, setNotices] = useState([]);
     const [selectedNotice, setSelectedNotice] = useState(null);
-
     const [loading, setLoading] = useState(false); // 로딩 상태 관리
+
 
 
     const handleGalleryImage = () => {

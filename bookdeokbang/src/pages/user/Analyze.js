@@ -8,7 +8,6 @@ import { useParams } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import LoadingComponent from './LoadingComponent';
 
-
 const Base = styled.div`
     width: 100%;
     min-height: 100vh;
@@ -39,7 +38,7 @@ const WhiteBox1 = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* Center vertically */
+    justify-content: center;
 `;
 
 const SaveBox = styled.div`
@@ -68,10 +67,10 @@ const Font_Title = styled.h1`
 `;
 
 const CustomButton = styled(Button)`
-    background-color: #00000;
-    color: #000000;
+    background-color: #000;
+    color: #fff;
     &:hover {
-        background-color: transparent;
+        background-color: #333;
     }
     font-family: 'Logo';
     width: 150px;
@@ -91,15 +90,14 @@ const Analyze = () => {
     const [loading, setLoading] = useState(false);
     const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const { sentenceId } = useParams();
-    const [analysisResult, setAnalysisResult] = useState([]);
+    const [analysisResult, setAnalysisResult] = useState({});
     const [grammar, setGrammar] = useState(null);
     const [difficulty, setDifficulty] = useState(null);
     const navigate = useNavigate();
 
     useEffect(() => {
-        setLoading(true);
-
         const fetchAnalysis = async () => {
+            setLoading(true);
             try {
                 const response = await TokenAxios.get(`${API_BASE_URL}/v1/sentences/${sentenceId}/info`);
                 setAnalysisResult(response.data.result);
@@ -124,7 +122,6 @@ const Analyze = () => {
             setLoading(false);
         }, 3000);
     };
-    
 
     return (
         <Base>
@@ -144,14 +141,9 @@ const Analyze = () => {
                     </CustomButton>
                 </SaveBox>
                 <SaveBox>
-                    <CustomButton onClick={() => navigate(`/studydetail`, {
-                        state: {
-                            content: analysisResult.content,
-                            sentenceId: analysisResult.info?.sentenceId
-                        }
-                    })}>
-                        학습 노트 저장하기
-                    </CustomButton>
+                    <Link to={`/studydetail/${analysisResult.content}&${sentenceId}`}>
+                        <CustomButton>학습 노트 저장하기</CustomButton>
+                    </Link>
                 </SaveBox>
                 <SaveBox>
                     <Link to="/main">
