@@ -192,7 +192,7 @@ const Saveadmin = () => {
                     </Menu>
                 </Dropdown>
             </DropdownGroup>
-            <Button onClick={handleGenerateSentence}>문장 생성하기</Button>
+            <Button onClick={handleGenerateSentence}>문장 등록하기</Button>
         </PageContainer>
     );
 };

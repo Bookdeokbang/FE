@@ -3,6 +3,7 @@ import styled from "styled-components";
 import theme from '../../styles/commonTheme';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
+import Pagination from '@mui/material/Pagination';
 import Menu from '@mui/joy/Menu';
 import MenuButton from '@mui/joy/MenuButton';
 import MenuItem from '@mui/joy/MenuItem';
@@ -49,15 +50,14 @@ const DropdownGroup = styled.div`
 `;
 
 const AddWordButton = styled(Button)`
-    padding: 10px 20px;
-    font-family: logo;
-    font-size: 16px;
-    background-color: ${theme.colors.primary};
-    color: black;
-    border-radius: 4px;
-    cursor: pointer;
+    padding: 10px 20px !important;
+    font-family: logo !important;
+    font-size: 16px !important;
+    background-color: ${theme.colors.primary} !important;
+    color: black !important;
+    border-radius: 4px !important;
+    cursor: pointer !important;
 `;
-
 
 const TableContainer = styled.div`
     width: 80%;
@@ -73,30 +73,31 @@ const StyledTable = styled(Table)`
 const StyledTableCell = styled.td`
     padding: 8px;
     border: 1px solid #dddddd;
-    text-align: left;
+    text-align: center; /* 가운데 정렬 추가 */
     font-size: 14px;
 `;
 
 const Wordadmin = () => {
     const [rows, setRows] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const rowsPerPage = 10;
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
+    const fetchData = async () => {
+        try {
+            const response = await TokenAxios.get(`${API_BASE_URL}/v1/admin/words/all`);
+            setRows(response.data.result);
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    };
 
     useEffect(() => {
-        async function fetchData() {
-            try {
-                const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-                const response = await TokenAxios.get(`${API_BASE_URL}/v1/admin/words/all`);
-                console.log(response.data);
-                setRows(response.data); // API 응답 데이터로 테이블 행 설정
-            } catch (error) {
-                console.error("Error fetching data:", error);
-                // 데이터 가져오기에 실패한 경우 에러 처리
-            }
-        }
-
         fetchData();
-    }, []);
+    }, [rows]);
 
-    const handleAddWord = () => {
+  
+    const handleAddWord = async () => {
         Swal.fire({
             title: '단어 등록',
             html:
@@ -113,53 +114,86 @@ const Wordadmin = () => {
                 }
                 return { name, meaning };
             }
-        }).then((result) => {
+        }).then(async (result) => {
             if (result.isConfirmed) {
                 const { name, meaning } = result.value;
-                // 여기에 단어 등록하는 API 호출하는 코드 작성
-                console.log("단어:", name, "의미:", meaning);
-                // 성공적으로 등록되었을 때 처리할 내용 추가
-                Swal.fire("단어가 등록되었습니다!", "", "success");
+                try {
+                    const data = [{ name, meaning }]; // 수정된 부분: 데이터를 배열 형태로 감싸서 전송
+                    const res = await TokenAxios.post(`${API_BASE_URL}/v1/admin/words`, data);
+                    if (res.data.result === "_OK") {
+                        Swal.fire("단어가 등록되었습니다!", "", "success");
+                        fetchData(); // 데이터 다시 불러오기
+                    }
+                } catch (error) {
+                    console.error("Error adding word:", error);
+                    Swal.fire("등록 실패", "오류가 발생했습니다.", "error");
+                }
             } else {
                 Swal.fire("단어 등록이 취소되었습니다.", "", "error");
             }
         });
     };
+    
+    
+    
+    const handlePageChange = (event, value) => {
+        setCurrentPage(value);
+    };
+
+    const handleWordSubmit = async (name, meaning) => {
+        try {
+            const data = { name: '', meaning: '' };
+            const res = await TokenAxios.post(`${API_BASE_URL}/v1/admin/words`, data);
+            if (res.data.result === "_OK") {
+                Swal.fire("단어가 등록되었습니다!", "", "success");
+            }
+        } catch (error) {
+            console.error("Error adding word:", error);
+            Swal.fire("등록 실패", "오류가 발생했습니다.", "error");
+        }
+    };
+    
+    const displayedRows = rows.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage);
 
     return (
         <PageContainer>
-            <Button onClick={handleAddWord} as={AddWordButton}>단어 등록하기</Button>
+            <AddWordButton onClick={handleAddWord}>단어 등록하기</AddWordButton>
             <TableContainer>
                 <StyledTable>
                     <thead>
                         <tr>
-                            <StyledTableCell>등록 날짜</StyledTableCell>
                             <StyledTableCell>단어</StyledTableCell>
+                            <StyledTableCell>뜻</StyledTableCell>
                         </tr>
                     </thead>
                     <tbody>
-                        {rows.map((row, index) => (
-                            <tr key={index}>
-                                <StyledTableCell>{row.Date}</StyledTableCell>
-                                <StyledTableCell>{row.sentence}</StyledTableCell>
-                            </tr>
-                        ))}
-                    </tbody>
+                         {displayedRows.map((row, index) => (
+                              <tr key={index}>
+                             <StyledTableCell>{row.name}</StyledTableCell>
+                            <StyledTableCell>{row.meaning}</StyledTableCell>
+                             </tr>
+    ))}
+</tbody>
                 </StyledTable>
             </TableContainer>
+            <Pagination
+                count={Math.ceil(rows.length / rowsPerPage)}
+                page={currentPage}
+                onChange={handlePageChange}
+                shape="rounded"
+                variant="outlined"
+            />
             <Link to="/mainadmin">
                 <Gramary>Gramary</Gramary>
             </Link>
-        
             <TopRightGroup>
                 <ButtonGroup
                     color="neutral"
                     orientation="horizontal"
-                    size="lg"
-                    spacing={0}
+                    size="large"
                     variant="soft"
                 >
-                     <Link to="/modifyadmin">
+                    <Link to="/modifyadmin">
                         <Button>관리자 정보 수정</Button>
                     </Link>
                     <Link to="/">
@@ -169,7 +203,7 @@ const Wordadmin = () => {
             </TopRightGroup>
             <DropdownGroup>
                 <Dropdown>
-                    <MenuButton variant="plain" color="neutral" size="lg">USER</MenuButton>
+                    <MenuButton variant="plain" color="neutral" size="large">USER</MenuButton>
                     <Menu variant="plain">
                         <Link to="/memberinfoadmin">
                             <MenuItem color="neutral">사용자 정보 관리</MenuItem>
@@ -189,20 +223,20 @@ const Wordadmin = () => {
                             <MenuItem color="neutral">단어 데이터 관리</MenuItem>
                         </Link>
                         <Link to="/infoadmin">
-                <MenuItem color="neutral">공지사항 관리</MenuItem>
-            </Link>
+                            <MenuItem color="neutral">공지사항 관리</MenuItem>
+                        </Link>
                     </Menu>
                 </Dropdown>
                 <Dropdown>
-                    <MenuButton variant="plain" color="neutral" size="lg">AI</MenuButton>
+                    <MenuButton variant="plain" color="neutral" size="large">AI</MenuButton>
                     <Menu variant="plain">
+
                         <Link to="/aiadmin">
                             <MenuItem color="neutral">모델 정보 및 관리</MenuItem>
                         </Link>
                     </Menu>
                 </Dropdown>
             </DropdownGroup>
-     
         </PageContainer>
     );
 };

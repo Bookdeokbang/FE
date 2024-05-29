@@ -9,7 +9,7 @@ const Base = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: ${theme.colors.white};
+    background-color: ${theme.colors.beige};
 `;
 
 const Container = styled.div`
@@ -19,6 +19,7 @@ const Container = styled.div`
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    background-color: ${theme.colors.beige};
 `;
 
 const GrayBox = styled.div`
@@ -41,11 +42,7 @@ const SmallWhiteBox = styled(Link)`
     justify-content: center;
     align-items: center;
     text-decoration: none;
-    color: #000;
-`;
-
-const CameraText = styled.span`
-    margin-left: 5px;
+    background-color: ${theme.colors.beige};
 `;
 
 const Box = styled.div`
@@ -58,10 +55,12 @@ const Box = styled.div`
     align-items: center;
     justify-content: flex-start;
     font-size: 16px;
+    background-color: ${theme.colors.beige};
 `;
 
 const Title = styled.div`
     margin-bottom: 1vh;
+    background-color: ${theme.colors.beige};
 `;
 
 const Font_Title = styled.h1`
@@ -76,21 +75,25 @@ const Font_Body = styled.h1`
     font-size: 20px;
     font-family: 'Logo';
     text-align: left;
-    color: #333; /* Adjusted text color */
+    background-color: ${theme.colors.beige};
+    color: black; // 항상 검정색으로 설정
+
 `;
 
 const Font_Content = styled.h1`
     font-size: 13px;
     font-family: 'Logo';
     text-align: left;
-    color: #333; /* Adjusted text color */
+    background-color: ${theme.colors.beige};
+    color: black; // 항상 검정색으로 설정
 `;
 
 
 const Bottom = styled.div`
-    background-color: #fff;
+   
     height: 100px;
     width: 100%;
+    background-color: ${theme.colors.beige};
 `;
 
 const MyPage = () => {
@@ -100,30 +103,26 @@ const MyPage = () => {
                 <Title>
                     <Font_Title>마이페이지</Font_Title>
                 </Title>
-                <GrayBox>
-                    <SmallWhiteBox to="/profile">
-                
-                    </SmallWhiteBox>
-                </GrayBox>
+             
                 <Box>
                     <Font_Body>나의 질문</Font_Body>
                 </Box>
                 <Box>
                     <Link to="/search">
-                        <Font_Content>최근 검색 내역</Font_Content>
+                        <Font_Content> - 최근 검색 내역</Font_Content>
                     </Link>
                 </Box>
                 <Box>
-                    <Font_Body>프로필 수정</Font_Body>
+                    <Font_Body>프로필</Font_Body>
                 </Box>
                 <Box>
                     <Link to="/profile">
-                        <Font_Content>회원 정보 보기</Font_Content>
+                        <Font_Content> - 회원 정보 보기</Font_Content>
                     </Link>
                 </Box>
                 <Box>
                     <Link to="/withdraw">
-                        <Font_Content>서비스 탈퇴</Font_Content>
+                        <Font_Content> - 서비스 탈퇴</Font_Content>
                     </Link>
                 </Box>
                 <Box>

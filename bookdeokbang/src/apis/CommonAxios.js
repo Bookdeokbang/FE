@@ -27,9 +27,9 @@ TokenAxios.interceptors.request.use(
     const nextConfig = config;
     const accessToken = localStorage.getItem("accessToken");
 //    nextConfig.headers.AccessToken = accessToken ? accessToken : "";
-if (accessToken) {
-  nextConfig.headers.Authorization = `Bearer ${accessToken}`;
-}
+  if (accessToken) {
+    nextConfig.headers.Authorization = `Bearer ${accessToken}`;
+  }
 
     return nextConfig;
   },

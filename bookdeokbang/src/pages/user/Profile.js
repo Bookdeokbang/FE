@@ -33,7 +33,7 @@ const ProfileBox = styled.div`
     justify-content: center;
     align-items: center;
 `;
-const InputBox = styled.input`
+const InputBox = styled.div`
     width: 100%; /* 최대 너비 설정 */
     height: 50px; /* 고정 높이값 */
     background-color: #fff;
@@ -47,6 +47,7 @@ const InputBox = styled.input`
     font-size: 16px; /* 고정된 글꼴 크기 설정 */
     padding: 0 10px; /* 내부 패딩 추가 */
 `;
+
 
 const Button = styled.button`
     width: 100%;
@@ -105,24 +106,23 @@ const Profile = () => {
         <Container>
             <Title>
                 <Font_Title>내 프로필</Font_Title>
+                <Font_Title></Font_Title>
             </Title>
-            <ProfileBox />
-            <Title>
-                <Font_Red>사진 바꾸기</Font_Red>
-            </Title>
+       
+           
             <Body>
             <Title>
                 <Font_Content>닉네임</Font_Content>
                 <InputBox type="text" /> {/* text type의 input 상자 */}
-                <Font_Content>상태 메세지</Font_Content>
-                <InputBox type="text" /> {/* text type의 input 상자 */}
+             
+                
             </Title>
             </Body>
             <Bottom>
                 <Font_Content>이메일</Font_Content>
                 <InputBox type="email" /> {/* email type의 input 상자 */}
             </Bottom>
-            <Button>저장하기</Button> {/* 저장하기 버튼 */}
+            <Button>돌아가기</Button> {/* 저장하기 버튼 */}
         </Container>
     </Base>
     );

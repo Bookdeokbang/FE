@@ -12,6 +12,7 @@ import { Link } from "react-router-dom";
 import Swal from 'sweetalert2';
 import { TokenAxios } from "../../apis/CommonAxios";
 import { useForm } from "react-hook-form";
+import axios from "axios";
 
 const PageContainer = styled.div`
     position: relative;
@@ -110,29 +111,21 @@ const Infoadmin = () => {
     const [rows, setRows] = useState([]);
     const { register, handleSubmit, setValue } = useForm();
 
-    useEffect(() => {
-        const fetchInitialNotices = async () => {
-            try {
-                const response = await TokenAxios.get(`${API_BASE_URL}/v1/admin/notices/all`);
-                setRows(response.data.result);
-            } catch (error) {
-                console.error("Error fetching initial notices:", error);
-            }
-        };
+    
 
-        fetchInitialNotices();
-    }, [API_BASE_URL]);
-
-    const fetchNotices = async (data) => {
+    
+    const fetchNotices = async () => {
         try {
-            const response = await TokenAxios.post(`${API_BASE_URL}/v1/admin/notices`, data);
-            console.log(response.data.result);
-            const updatedResponse = await TokenAxios.get(`${API_BASE_URL}/v1/admin/notices`);
-            setRows(updatedResponse.data.result);
+            const response = await TokenAxios.get(`${API_BASE_URL}/v1/admin/notices/all`);
+            setRows(response.data.result);
         } catch (error) {
-            console.error("Error fetching notices:", error);
+            console.error("Error fetching initial notices:", error);
         }
     };
+
+    useEffect(() => {
+        fetchNotices();
+    }, [rows]);
 
     const updateNotice = async (noticeId, data) => {
         try {
@@ -162,8 +155,21 @@ const Infoadmin = () => {
         setRows(filteredRows);
     };
 
-    const handleNotice = () => {
+    const handleNotice = async () => {
+        const data = { title: '', content: '', pinned: false };
+        try {
+            const res = await TokenAxios.post(`${API_BASE_URL}/v1/admin/notices`, data);
+            if (res.data.result === "_OK") {
+                Swal.fire("등록 성공", "", "success");
+                fetchNotices();
+            }
+        } catch (error) {
+            console.error("Error adding notices:", error);
+            Swal.fire("등록 실패", "오류가 발생했습니다.", "error");
+        }
+    
         Swal.fire({
+            title: '공지사항 등록',
             html:
                 `<input id="title" class="swal2-input" placeholder="제목"/>
                  <textarea id="content" class="swal2-textarea" placeholder="내용"></textarea>`,
@@ -181,17 +187,29 @@ const Infoadmin = () => {
         }).then((result) => {
             if (result.isConfirmed) {
                 const { title, content } = result.value;
-                setValue("title", title);
-                setValue("content", content);
-                setValue("pinned", false);
-                handleSubmit(fetchNotices)();
-                Swal.fire("저장되었습니다!", "", "success");
+                console.log("제목:", title, "내용:", content);
+                // 서버에 데이터 전송
+                handleNoticeSubmit(title, content);
             } else {
                 Swal.fire("공지사항이 저장되지 않았습니다.", "", "error");
             }
         });
     };
-
+    
+    const handleNoticeSubmit = async (title, content) => {
+        try {
+            const data = { title, content, pinned: false };
+            const res = await TokenAxios.post(`${API_BASE_URL}/v1/admin/notices`, data);
+            if (res.data.result === "_OK") {
+                Swal.fire("저장되었습니다!", "", "success");
+                fetchNotices();
+            }
+        } catch (error) {
+            console.error("Error adding notices:", error);
+            Swal.fire("등록 실패", "오류가 발생했습니다.", "error");
+        }
+    };
+    
     const handleNameClick = (title, content, id) => {
         Swal.fire({
             title: '공지사항 내용',

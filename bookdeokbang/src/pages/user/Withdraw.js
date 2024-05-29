@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import theme from '../../styles/commonTheme';
 import Button from '@mui/material/Button';
+import { useNavigate} from "react-router-dom"; 
 import { TokenAxios } from "../../apis/CommonAxios";
 
 const Base = styled.div`
@@ -58,20 +59,18 @@ const Font_Content = styled.h1`
 `;
 
 const Withdraw = () => {
-    const [withdrawResult, setWithdrawResult] = useState(null);
+    const navigate = useNavigate(); // useHistory 훅 사용
 
     const handleWithdrawal = async () => {
+        const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
         try {
-            const res = await TokenAxios.patch('/v1/users/me/quit'); // PATCH 메서드로 변경
-            setWithdrawResult(res.data);
+            const res = await TokenAxios.patch(`${API_BASE_URL}/v1/users/me/quit`);
+            console.log('Good Bye');
+            navigate("/"); // 탈퇴 성공 시 메인 페이지로 이동
         } catch (error) {
             console.error("탈퇴 요청 에러:", error);
         }
     };
-
-    useEffect(() => {
-        handleWithdrawal();
-    }, []);
 
     return (
         <Base>
@@ -85,11 +84,6 @@ const Withdraw = () => {
                 <Button variant="contained" onClick={handleWithdrawal} sx={{ backgroundColor: '#000', color: '#fff' }}>
                     <Font_Content>탈퇴하기</Font_Content>
                 </Button>
-                {withdrawResult && (
-                    <div>
-                        <p>탈퇴 결과: {withdrawResult}</p>
-                    </div>
-                )}
             </Container>
         </Base>
     );

@@ -40,8 +40,10 @@ const CustomButton = styled(Button)`
     background-color: #00000;
     color: #000000;
     &:hover {
-        background-color: #FFD465;
+        background-color: transparent;
     }
+    font-family: Logo;
+
     width: 150px;
     height: 50px;
     font-size: 18px;
@@ -89,7 +91,7 @@ const Terms = () => {
                 <Font_Title>이용약관</Font_Title>
             </Title>
             <ContentBox/> 
-            <Link to="/main">
+            <Link to="/question">
                 <CustomButton>
                     돌아가기
                 </CustomButton>

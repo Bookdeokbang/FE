@@ -1,79 +1,51 @@
-
-
-import { React, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from "styled-components";
 import theme from '../../styles/commonTheme';
 import { Link } from 'react-router-dom';
 import { TokenAxios } from "../../apis/CommonAxios";
 import { Button } from "@mui/material";
+import Swal from "sweetalert2";
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 const Base = styled.div`
     width: 100%;
     min-height: 100vh;
     display: flex;
     justify-content: center;
+    padding-bottom: 120px;
     align-items: center;
     background-color: ${theme.colors.beige};
 `;
-
 const Container = styled.div`
     width: 100%;
+    margin-top: 0px;
     max-width: 1200px;
     padding: 20px;
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     justify-content: center;
+    align-items: center;
 `;
-const WhiteBox1 = styled.div`
+
+const TitleBox = styled.div`
     width: 100%;
-    height: 150px;
-    background-color: #fff;
-    margin-bottom: 15px;
-    border-radius: 8px; /* 둥근 모서리 추가 */
-    border: 1px solid ${theme.colors.black}; /* 테두리 추가 */
-    box-sizing: border-box; /* 테두리를 포함한 전체 크기를 유지하도록 설정 */
-`;
-
-const Memo = styled.textarea`
-    width: 100%;
-    height: 300px;
-    background-color: #fff;
-    margin-bottom: 50px;
-    border-radius: 8px;
-    border: 1px solid ${theme.colors.black};
-    box-sizing: border-box;
-    padding: 10px;
-    font-size: 16px;
-    resize: vertical;
-    &::placeholder { /* 힌트 텍스트 스타일링 */
-        color: #a9a9a9;
-    }
-`;
-
-
-
-
-const SaveBox = styled.div`
-    width: 100%; /* 최대 너비 설정 */
-    height: 50px; /* 고정 높이값 */
-    background-color: #fff;
-    margin-bottom: 15px; /* 틈을 주기 위한 마진 */
-    border-radius: 8px; /* 둥근 모서리 추가 */
-    border: 1px solid ${theme.colors.black}; /* 테두리 추가 */
-    box-sizing: border-box; /* 테두리를 포함한 전체 크기를 유지하도록 설정 */
+    height: 50px;
+    background-color: #F0F0F0;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    border-radius: 10px;
     display: flex;
-    align-items: center; /* 텍스트를 수직 정렬하기 위해 추가 */
-    justify-content: center; /* 텍스트를 수평 정렬하기 위해 추가 */
-    font-size: 16px; /* 고정된 글꼴 크기 설정 */
+    justify-content: center;
+    align-items: center;
+    border: 0.8px solid ${theme.colors.black};
 `;
-
-
 const CustomButton = styled(Button)`
     background-color: #00000;
-    margin-top:-20px;
     color: #000000;
     &:hover {
-        background-color: #FFD465;
+        background-color: #11111;
     }
     width: 150px;
     height: 50px;
@@ -82,100 +54,97 @@ const CustomButton = styled(Button)`
 `;
 
 const Title = styled.div`
-    margin-bottom: 2vh;
+    margin-bottom: 7vh;
+    margin-top: 10px;
+`;
+const Body = styled.div`
+    width: 100%;
+`;
+const Bottom = styled.div`
+    height: 200px;
+    width: 100%;
 `;
 
 const Font_Title = styled.h1`
-    font-size: 30px;
+    font-size: 25px;
     font-family: 'Logo';
-    margin: 0;
-    text-align: left;
-`;
-
-const Font_Button = styled.h1`
-    font-size: 15px;
-    font-family: 'Logo';
-    margin: 0;
-    text-align: left;
+    margin: auto;
+    text-align: center;
 `;
 
 const Font_Body = styled.h1`
     font-size: 20px;
-    font-family: 'engLogo';
-    margin: 5;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-`;
-
-const Font_Body2 = styled.h1`
-    font-size: 20px;
     font-family: 'Logo';
-    margin: 0;
     text-align: left;
-    line-height: 1.2;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
 `;
-
-const Body = styled.div`
-    width: 100%;
+const Font_Content = styled.h1`
+    font-size: 15px;
+    font-family: 'Logo';
+    text-align: left;
+    color: black;
 `;
 
 const StudyNote = () => {
     const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
-    const StudytNotewrite = async () => {
-        try {
-            const res = await TokenAxios.post(`${API_BASE_URL}/v1/notes/memo`);
-            const data = res.data.result;
-            console.log(data);
-        } catch (e) {
-            console.log("fail");
-        }
-    }
-
-    const StudyNoteAll = async () => {
-        try {
-            const res = await TokenAxios.get(`${API_BASE_URL}/v1/notes/all`);
-            const response = res.data.result;
-            console.log(response);
-        } catch (e) {
-            console.log(e);
-        }
-    }
+    const [notes, setNotes] = useState([]);
+    const [selectedNote, setSelectedNote] = useState(null);
 
     useEffect(() => {
-        StudyNoteAll();
-    }, []);
+        const fetchNotes = async () => {
+            try {
+                const res = await TokenAxios.get(`${API_BASE_URL}/v1/notes/all`);
+                setNotes(res.data.result);
+            } catch (error) {
+                console.error("Error fetching notes:", error);
+            }
+        };
+        fetchNotes();
+    }, [API_BASE_URL]);
+
+    const handleNoteClick = async (noteId) => {
+        try {
+            const res = await TokenAxios.get(`${API_BASE_URL}/v1/notes/${noteId}`);
+            setSelectedNote(res.data.result);
+            handleModalOpen(res.data.result);
+        } catch (error) {
+            console.error("노트 detail 가져오기 실패:", error);
+        }
+    };
+
+    const handleModalOpen = (note) => {
+        MySwal.fire({
+            title: <strong>{note.title}</strong>,
+            html: (
+                <div>
+                    <p><strong>Title:</strong> {note.title}</p>
+                    <p><strong>Content:</strong> {note.content}</p>
+                    <p><strong>Updated At:</strong> {note.updated_at}</p>
+                </div>
+            ),
+            showCloseButton: true,
+        });
+    };
 
     return (
         <Base>
             <Container>
                 <Title>
-                    <Font_Title>학습 노트</Font_Title>
+                    <Font_Title>학습노트</Font_Title>
                 </Title>
-                <WhiteBox1>
-                    <Font_Body></Font_Body>
-                </WhiteBox1>
-                <Memo placeholder="메모를 입력하세요" />
-
-              
-                    <Link to="/main">
-                        <CustomButton>
-                           학습종료
-                      </CustomButton>
-                    </Link>
-           
+                {notes.map((note) => (
+                    <TitleBox key={note.noteId} onClick={() => handleNoteClick(note.noteId)}>
+                        <Font_Content>
+                            {note.title}
+                        </Font_Content>
+                    </TitleBox>
+                ))}
+                <Link to="/main">
+                    <CustomButton>돌아가기</CustomButton>
+                </Link>
             </Container>
         </Base>
     );
-}
+};
 
 export default StudyNote;
-
-

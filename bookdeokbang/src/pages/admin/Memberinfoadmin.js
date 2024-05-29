@@ -97,10 +97,7 @@ function createData(No, name, ID) {
 }
 
 const initialRows = [
-    createData(1, '김가천', 'A123@naver.com'),
-    createData(2, '이철수', 'B456@naver.com'),
-    createData(3, '박영희', 'C789@naver.com'),
-    createData(3, 'string', 'string'),
+ 
 ];
 
 const Memberinfoadmin = () => {

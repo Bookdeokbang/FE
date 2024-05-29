@@ -7,6 +7,7 @@ import SignUp from "./pages/common/Signup";
 import MainPage from "./pages/user/MainPage";
 import Similar from "./pages/user/Similar";
 import StudyNote from "./pages/user/StudyNote";
+import StudyDetail from "./pages/user/StudyDetail";
 import Search from "./pages/user/Search";
 import Analyze from "./pages/user/Analyze";
 import MyPage from "./pages/user/MyPage"; 
@@ -40,10 +41,11 @@ const Router = () => {
                 <Route path="/" element={<Login/>}/>
                 <Route path="/signUp" element={<SignUp/>}/>
                 <Route path="/main" element={<MainPage/>}/>
-                <Route path="/similar" element={<Similar/>}/>
+                <Route path="/similar/:grammar/:difficulty" element={<Similar/>}/>
                 <Route path="/studynote" element={<StudyNote/>}/>
+                <Route path="/studydetail/:contentAndSentenceId" element={<StudyDetail/>}/>
                 <Route path="/search" element={<Search/>}/>
-                <Route path="/analyze" element={<Analyze/>}/>
+                <Route path="/analyze/:sentenceId" element={<Analyze/>}/>
                 <Route path="/mypage" element={<MyPage/>}/>
                 <Route path="/profile" element={<Profile/>}/>
                 <Route path="/withdraw" element={<Withdraw/>}/>
@@ -74,4 +76,3 @@ const Router = () => {
 };
 
 export default Router;
-

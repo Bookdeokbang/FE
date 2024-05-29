@@ -19,9 +19,7 @@ const ImgContainer = styled.div`
 
 const Ocr = () => {
     // URL에서 이미지 URL을 가져옵니다.
-
-    
-
+    // 분석 로딩 페이지
     <div>
         hello success
     </div>
