@@ -36,6 +36,7 @@ const Gramary = styled.div`
     left: 20px;
     font-size: 30px;
     font-family: englogo;
+    color: #000; /* 검정색으로 설정 */
 `;
 
 const DropdownGroup = styled.div`
@@ -70,9 +71,10 @@ const StyledTable = styled(Table)`
 const StyledTableCell = styled.td`
     padding: 8px;
     border: 1px solid #dddddd;
-    text-align: left;
+    text-align: center; /* 가운데 정렬을 설정 */
     font-size: 14px;
 `;
+
 
 function createData(label, value) {
     return { label, value };

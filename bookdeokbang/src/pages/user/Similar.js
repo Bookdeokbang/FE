@@ -24,35 +24,18 @@ const Container = styled.div`
     justify-content: center;
 `;
 
-
 const WhiteBox1 = styled.div`
     width: 100%;
-    height: 100px;
+    height: 120px;
     background-color: #fff;
-    margin-bottom: 5px;
-    margin-top: 5px;
+    margin-bottom: 15px;
     border-radius: 8px;
     border: 1px solid ${theme.colors.black};
     box-sizing: border-box;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
 `;
-const WhiteBox2 = styled.div`
-    width: 100%;
-    height: 50px;
-    background-color: transparent;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    
-    box-sizing: border-box;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-`;
-
 
 const SaveBox = styled.div`
     width: 100%;
@@ -73,32 +56,15 @@ const Title = styled.div`
 `;
 
 const CustomButton = styled(Button)`
-background-color: transparent;
-color: #000000; /* 검정색으로 설정 */
-&:hover {
-    background-color: transparent;
-}
-font-family: 'Logo';
-width: 100%;
-height: 50px;
-font-size: 15px;
-align-self: center;
-margin-top: 10px;
-`;
-
-
-const CustomButton2 = styled(Button)`
-    background-color: #111111;
-    color: #ffffff; /* 검정색으로 설정 */
+    background-color: #00000;
+    color: #000000;
     &:hover {
-        background-color: #111111;
+        background-color: #11111;
     }
-    font-family: 'Logo';
-    width: 100%;
+    width: 150px;
     height: 50px;
     font-size: 15px;
     align-self: center;
-    margin-top: 10px;
 `;
 
 const Font_Title = styled.h1`
@@ -109,29 +75,23 @@ const Font_Title = styled.h1`
 `;
 
 const Font_Body = styled.h1`
-    font-size: 16px;
+    font-size: 20px;
     font-family: 'engLogo';
     margin: 5;
     text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     height: 100%;
 `;
 
 const Similar = () => {
     const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
     const { grammar, difficulty } = useParams();
-    const [analysisResult, setAnalysisResult] = useState([]);
-    
+    const [sentences, setSentences] = useState([]);
 
     const fetchData = async () => {
         try {
             const res = await TokenAxios.get(`${API_BASE_URL}/v1/sentences/${grammar}/${difficulty}/recommend`);
             const data = res.data.result;
-            setAnalysisResult(res.data.result);
-
-            console.log(data);
+            setSentences(data);
         } catch (error) {
             console.error('Error fetching recommended sentences:', error);
         }
@@ -149,42 +109,27 @@ const Similar = () => {
                 </Title>
                     
                 <WhiteBox1>
-                    <Font_Body>유사 문장1</Font_Body>
-                   
-                </WhiteBox1>
-                <Link to={{
-                        pathname: `/studydetail/${analysisResult.content}`,
-                        state: { content: analysisResult.content }
-                    }}>
-                        <CustomButton>추천문장 저장하기</CustomButton>
-                    </Link>
-                <WhiteBox1>
-                    <Font_Body>유사 문장2</Font_Body>
-                    
-                </WhiteBox1>
-                <Link to={{
-                        pathname: `/studydetail/${analysisResult.content}`,
-                        state: { content: analysisResult.content }
-                    }}>
-                        <CustomButton>추천문장 저장하기</CustomButton>
-                    </Link>
-                <WhiteBox1>
-                    <Font_Body>유사 문장3</Font_Body>
-                    
-                </WhiteBox1>
+                 <Font_Body>{sentences.content}</Font_Body>
+                 </WhiteBox1>
+                 <WhiteBox1>
+                 <Font_Body>{sentences.content}</Font_Body>
+                 </WhiteBox1>
 
-                <Link to={{
-                        pathname: `/studydetail/${analysisResult.content}`,
-                        state: { content: analysisResult.content }
-                    }}>
+                 <WhiteBox1>
+                 <Font_Body>{sentences.content}</Font_Body>
+                 </WhiteBox1>
+
+        
+                <SaveBox>
+                    <Link to="/studynote">
                         <CustomButton>추천문장 저장하기</CustomButton>
                     </Link>
-                    <WhiteBox2>
+                </SaveBox>
+                <SaveBox>
                     <Link to="/main">
-                    <CustomButton2>학습 종료</CustomButton2>
-                </Link>
-                </WhiteBox2>
-               
+                        <CustomButton>학습 종료</CustomButton>
+                    </Link>
+                </SaveBox>
             </Container>
         </Base>
     );

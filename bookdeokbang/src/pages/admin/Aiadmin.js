@@ -35,6 +35,7 @@ const Gramary = styled.div`
     left: 20px;
     font-size: 30px;
     font-family: englogo;
+    color: #000; /* 검정색으로 설정 */
     cursor: pointer; /* 마우스 커서를 포인터로 변경하여 클릭 가능한 것임을 표시합니다. */
 `;
 

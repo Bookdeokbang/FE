@@ -38,6 +38,7 @@ const Gramary = styled.div`
     left: 20px;
     font-size: 30px;
     font-family: englogo;
+    color: #000; /* 검정색으로 설정 */
 `;
 
 const CenterGroup = styled.div`

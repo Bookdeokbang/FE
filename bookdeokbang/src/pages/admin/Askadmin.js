@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import theme from '../../styles/commonTheme';
 import Button from '@mui/material/Button';
@@ -47,6 +47,7 @@ const Gramary = styled.div`
     left: 20px;
     font-size: 30px;
     font-family: englogo;
+    color: #000; /* 검정색으로 설정 */
 `;
 
 const DropdownGroup = styled.div`
@@ -73,7 +74,7 @@ const StyledTable = styled(Table)`
 const StyledTableCell = styled.td`
     padding: 8px;
     border: 1px solid #dddddd;
-    text-align: left;
+    text-align: center; /* 가운데 정렬을 설정 */
     font-size: 14px;
 `;
 
@@ -95,68 +96,67 @@ const SearchInput = styled.input`
 const SearchButton = styled(Button)`
     padding: 10px 20px;
     font-size: 16px;
+    font-family:logo;
     background-color: ${theme.colors.primary};
-    color: white;
+    color: black; /* 검정색으로 설정 */
     border: none;
     border-radius: 4px;
     cursor: pointer;
 `;
 
-function createData(date, title, content, author) {
-    return { date, title, content, author };
-}
-
-const initialRows = [
-    createData('2024-05-01', '문의 제목 1', '문의 내용 1', '작성자 1'),
-    createData('2024-05-02', '문의 제목 2', '문의 내용 2', '작성자 2'),
-    createData('2024-05-03', '문의 제목 3', '문의 내용 3', '작성자 3'),
-];
-
 const Askadmin = () => {
     const [searchTerm, setSearchTerm] = useState("");
-    const [rows, setRows] = useState(initialRows);
+    const [inquiries, setInquiries] = useState([]);
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
+    useEffect(() => {
+        fetchInquiries();
+    }, []);
+
+    const fetchInquiries = async () => {
+        try {
+            const response = await TokenAxios.get(`${API_BASE_URL}/v1/admin/inquiries/all`);
+            if (response.data && response.data.isSuccess) {
+                setInquiries(response.data.result);
+            } else {
+                throw new Error("Failed to fetch inquiries");
+            }
+        } catch (error) {
+            console.error("Error fetching inquiries:", error);
+            Swal.fire("오류", "문의 정보를 가져오는 도중 오류가 발생했습니다.", "error");
+        }
+    };
 
     const handleInputChange = (e) => {
         setSearchTerm(e.target.value);
     };
 
-    const handleSearch = () => {
-        const filteredRows = initialRows.filter(row =>
-            row.title.includes(searchTerm) || row.author.includes(searchTerm)
-        );
-        setRows(filteredRows);
+    const handleSearch = async () => {
+        try {
+            const response = await TokenAxios.get(`${API_BASE_URL}/v1/admin/inquiries/all`, {
+                params: { searchTerm }
+            });
+            if (response.data && response.data.isSuccess) {
+                // 검색어가 포함된 문의만 필터링하여 업데이트
+                const filteredInquiries = response.data.result.filter(inquiry =>
+                    inquiry.requestMessage.includes(searchTerm) ||
+                    inquiry.userId.toString().includes(searchTerm)
+                );
+                setInquiries(filteredInquiries);
+            } else {
+                throw new Error("Failed to fetch inquiries");
+            }
+        } catch (error) {
+            console.error("Error fetching inquiries:", error);
+            Swal.fire("오류", "문의 정보를 가져오는 도중 오류가 발생했습니다.", "error");
+        }
     };
+    
+    
+    
 
     const handleNameClick = (content) => {
-        Swal.fire({
-            icon: "info",
-            title: "문의 내용",
-            text: content,
-            showCancelButton: true,
-            confirmButtonColor: "black",
-            confirmButtonText: "확인",
-            cancelButtonText: "답변달기",
-            preConfirm: () => {
-         
-            }
-        }).then((result) => {
-            if (result.dismiss === Swal.DismissReason.cancel) {
-    
-                Swal.fire({
-                    title: '답변을 입력하세요',
-                    input: 'textarea',
-                    inputPlaceholder: '답변을 입력하세요',
-                    showCancelButton: true,
-                    confirmButtonText: '제출',
-                    cancelButtonText: '취소',
-                    preConfirm: (reply) => {
-                    
-                        console.log(`Reply submitted: ${reply}`);
-                        
-                    }
-                });
-            }
-        });
+        // 여기에 클릭한 문의 내용을 표시하는 코드를 작성할 수 있습니다.
     };
 
     return (
@@ -168,29 +168,27 @@ const Askadmin = () => {
                     value={searchTerm} 
                     onChange={handleInputChange} 
                 />
-                <Button onClick={handleSearch}>검색</Button>
+                <SearchButton onClick={handleSearch}>검색</SearchButton>
             </SearchContainer>
             <TableContainer>
                 <StyledTable>
                     <thead>
                         <tr>
                             <StyledTableCell>문의 날짜</StyledTableCell>
-                            <StyledTableCell>문의 제목</StyledTableCell>
                             <StyledTableCell>문의 내용</StyledTableCell>
-                            <StyledTableCell>작성자</StyledTableCell>
+                            <StyledTableCell>USER ID</StyledTableCell>
                         </tr>
                     </thead>
                     <tbody>
-                        {rows.map((row, index) => (
+                        {inquiries.map((inquiry, index) => (
                             <tr key={index}>
-                                <StyledTableCell>{row.date}</StyledTableCell>
+                                <StyledTableCell>{inquiry.requestTimestamp}</StyledTableCell>
                                 <StyledTableCell>
-                                    <a href="#" onClick={() => handleNameClick(row.content)}>
-                                        {row.title}
+                                    <a href="#" onClick={() => handleNameClick(inquiry.requestMessage)}>
+                                        {inquiry.requestMessage}
                                     </a>
                                 </StyledTableCell>
-                                <StyledTableCell>{row.content}</StyledTableCell>
-                                <StyledTableCell>{row.author}</StyledTableCell>
+                                <StyledTableCell>{inquiry.userId}</StyledTableCell>
                             </tr>
                         ))}
                     </tbody>

@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import theme from '../../styles/commonTheme';
 import { Button } from "@mui/material";
-import { Link } from 'react-router-dom';
-
+import Swal from 'sweetalert2';
+import { TokenAxios } from '../../apis/CommonAxios';
 
 const CustomButton = styled(Button)`
     background-color: #00000;
@@ -22,20 +22,22 @@ const Base = styled.div`
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    padding-bottom: 120px; /* 위쪽 여백 설정 */
+    padding-bottom: 120px;
     align-items: center;
     background-color: ${theme.colors.white};
 `;
+
 const Container = styled.div`
     width: 100%;
     margin-top: 0px;
     max-width: 1200px;
     padding: 20px;
     display: flex;
-    flex-direction: column; /* 세로 방향으로 정렬 */
-    justify-content: center; /* 수직 가운데 정렬 */
-    align-items: center; /* 수평 가운데 정렬 */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 `;
+
 const Memo = styled.textarea`
     width: 100%;
     height: 480px;
@@ -48,96 +50,76 @@ const Memo = styled.textarea`
     padding: 10px;
     font-size: 16px;
     resize: vertical;
-    &::placeholder { /* 힌트 텍스트 스타일링 */
+    &::placeholder {
         color: #a9a9a9;
     }
 `;
 
-const ContentBox = styled.div`
-    width: 100%;
-    height: 700px;
-    background-color: #F0F0F0;
-    margin-top: 10px; /* 위쪽 여백 */
-    margin-bottom: 50px; /* 아래쪽 여백 */
-    border-radius: 10px;
-    box-sizing: border-box; /* 테두리를 포함한 전체 크기를 유지하도록 설정 */
-    border: 0.8px solid ${theme.colors.black}; /* 테두리 추가 */
-`;
-const InputBox = styled.div`
-    width: 100%; /* 최대 너비 설정 */
-    height: 50px; /* 고정 높이값 */
-    background-color: #111;
-    margin-bottom: 20px; /* 틈을 주기 위한 마진 */
-    border-radius: 8px; /* 둥근 모서리 추가 */
-    box-sizing: border-box; /* 테두리를 포함한 전체 크기를 유지하도록 설정 */
-    display: flex;
-    align-items: center; /* 텍스트를 수직 정렬하기 위해 추가 */
-    justify-content: center; /* 텍스트를 수평 정렬하기 위해 추가 */
-    font-size: 16px; /* 고정된 글꼴 크기 설정 */
-
-`;
-
-
-const Title=styled.div`
-    margin-bottom:1vh;
-    margin-top: 30px;
-`;
-const Body = styled.div`
-    width: 100%; /* 최대 너비 설정 */
-`;
-const Bottom=styled.div`
-    height: 100px; /* 고정 높이값 */
-    width: 100%; /* 최대 너비 설정 */
-    display: flex;
-    justify-content: center; /* 수평 가운데 정렬 */
-    align-items: center; /* 수직 가운데 정렬 */
-    margin-top: -60px; /* 원하는 만큼 갭을 조절 */
-`;
-
-
 const Font_Title = styled.h1`
     font-size: 25px;
     font-family: 'Logo';
-    margin: auto; /* 수평 가운데 정렬 */
-    text-align:center;
+    margin: auto;
+    text-align: center;
 `;
 
-const Font_Body = styled.h1`
-    font-size: 20px;
-    font-family: 'Logo';
-    text-align: left;
+const Bottom = styled.div`
+    height: 100px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: -60px;
 `;
-const Font_Content = styled.h1`
-    font-size: 18px;
-    font-family: 'Logo';
-    text-align: left;
-    color:white;
-`;
-
 
 const Inquiry = () => {
-    return (
-    <Base>
-        <Container>
-            <Title>
-                <Font_Title>1:1 문의내역</Font_Title>
-            </Title>
-            <Memo placeholder="문의내역을 입력하세요" />
-            
-            <Bottom>
-          
-            <Link to="/main">
-                <CustomButton>
-                           저장하기
-                </CustomButton>
-            </Link>
-           
-         
-        </Bottom>
-        </Container>
-    </Base>
-    );
-}
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+    const [memoContent, setMemoContent] = useState('');
 
+    const handleInquiry = async () => {
+        const userId = localStorage.getItem("userId");  // 사용자 ID 가져오기
+        const requestTimestamp = new Date().toISOString();
+
+        try {
+            const payload = {
+                user: userId,
+                request: memoContent,
+                request_timestamp: requestTimestamp,
+            };
+            console.log("Request Payload:", payload);  // 요청 데이터 확인 로그
+    
+            const res = await TokenAxios.post(`${API_BASE_URL}/v1/inquiries`, payload);
+    
+            console.log("Response Data:", res.data);  // 응답 데이터 확인 로그
+    
+            if (res.data.isSuccess && res.data.result === "_OK") {
+                Swal.fire("성공", "문의가 성공적으로 저장되었습니다.", "success");
+                setMemoContent('');  // 저장 후 입력 내용 초기화
+            } else {
+                Swal.fire("오류", res.data.message || "문의 저장 중 오류가 발생했습니다.", "error");
+            }
+        } catch (error) {
+            console.error("Error posting inquiry", error);
+            Swal.fire("오류", "문의 저장 중 오류가 발생했습니다.", "error");
+        }
+    };
+
+    return (
+        <Base>
+            <Container>
+                <Font_Title>1:1 문의내역</Font_Title>
+                <Memo 
+                    placeholder="문의내역을 입력하세요" 
+                    value={memoContent} 
+                    onChange={(e) => setMemoContent(e.target.value)}
+                />
+                <Bottom>
+                    <CustomButton onClick={handleInquiry}>
+                        저장하기
+                    </CustomButton>
+                </Bottom>
+            </Container>
+        </Base>
+    );
+};
 
 export default Inquiry;

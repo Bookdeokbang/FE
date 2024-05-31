@@ -39,6 +39,7 @@ const Gramary = styled.div`
     left: 20px;
     font-size: 30px;
     font-family: englogo;
+    color: #000; /* 검정색으로 설정 */
 `;
 
 const DropdownGroup = styled.div`
@@ -65,7 +66,7 @@ const StyledTable = styled(Table)`
 const StyledTableCell = styled.td`
     padding: 8px;
     border: 1px solid #dddddd;
-    text-align: left;
+    text-align: center;
     font-size: 14px;
     cursor: pointer;
 `;
@@ -95,13 +96,14 @@ const SearchButton = styled(Button)`
     border-radius: 4px;
     cursor: pointer;
 `;
-const StyledLink = styled(Link)`
-color: #000; /* 링크 색상을 항상 검정색으로 설정 */
-text-decoration: none; /* 링크의 밑줄을 제거 */
 
-&:hover {
-    color: #000; /* 호버 시에도 검정색 유지 */
-}
+const StyledLink = styled(Link)`
+    color: #000; /* 링크 색상을 항상 검정색으로 설정 */
+    text-decoration: none; /* 링크의 밑줄을 제거 */
+
+    &:hover {
+        color: #000; /* 호버 시에도 검정색 유지 */
+    }
 `;
 
 const NoticeButton = styled(Button)`
@@ -116,6 +118,7 @@ const NoticeButton = styled(Button)`
 
 const Infoadmin = () => {
     const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+    const [notices, setNotices] = useState([]); // 공지사항 목록 상태 및 상태 업데이트 함수
     const [searchTerm, setSearchTerm] = useState("");
     const [rows, setRows] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -157,15 +160,10 @@ const Infoadmin = () => {
     };
 
     const handleInputChange = (e) => {
-        setSearchTerm(e.target.value);
+        setSearchTerm(e.target.value.toLowerCase()); // 검색어를 소문자로 변환
     };
 
-    const handleSearch = () => {
-        const filteredRows = rows.filter(row =>
-            row.title.includes(searchTerm) || row.content.includes(searchTerm)
-        );
-        setRows(filteredRows);
-    };
+    
 
     const handleNotice = async () => {
         const data = { title: '', content: '', pinned: false };
@@ -231,34 +229,7 @@ const Infoadmin = () => {
             cancelButtonText: '삭제하기',
         }).then((result) => {
             if (result.isConfirmed) {
-                Swal.fire({
-                    title: '공지사항 수정',
-                    html:
-                        `<input id="title" class="swal2-input" value="${title}" placeholder="제목">
-                         <textarea id="content" class="swal2-textarea" rows="5">${content}</textarea>`,
-                    showCancelButton: true,
-                    confirmButtonText: '저장',
-                    cancelButtonText: '취소',
-                    preConfirm: () => {
-                        const title = document.getElementById('title').value;
-                        const content = document.getElementById('content').value;
-                        if (!title || !content) {
-                            Swal.showValidationMessage('제목과 내용을 모두 입력해주세요.');
-                        }
-                        return { title, content };
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const { title, content } = result.value;
-                        setValue("title", title);
-                        setValue("content", content);
-                        setValue("pinned", false);
-                        handleSubmit((data) => updateNotice(id, data))();
-                        Swal.fire("저장되었습니다!", "", "success");
-                    } else {
-                        Swal.fire("수정이 취소되었습니다.", "", "error");
-                    }
-                });
+                // 수정 로직
             } else if (result.dismiss === Swal.DismissReason.cancel) {
                 Swal.fire({
                     title: '삭제 확인',
@@ -272,11 +243,7 @@ const Infoadmin = () => {
                 }).then((result) => {
                     if (result.isConfirmed) {
                         console.log('삭제됨');
-                        Swal.fire(
-                            '삭제 완료',
-                            '항목이 삭제되었습니다.',
-                            'success'
-                        );
+                        // 삭제 로직
                     }
                 });
             }
@@ -292,16 +259,11 @@ const getCurrentRows = () => {
   const handlePageChange = (event, value) => {
         setCurrentPage(value);
     };
+
     return (
         <PageContainer>
             <SearchContainer>
-                <SearchInput
-                    type="text"
-                    placeholder="제목을 입력하세요"
-                    value={searchTerm}
-                    onChange={handleInputChange}
-                />
-                <SearchButton onClick={handleSearch}>검색</SearchButton>
+       
                 <NoticeButton onClick={handleNotice}>공지사항 작성하기</NoticeButton>
             </SearchContainer>
             <TableContainer>

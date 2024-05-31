@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import theme from '../../styles/commonTheme';
 import { Link } from 'react-router-dom';
+import { TokenAxios } from "../../apis/CommonAxios";
 
 const Base = styled.div`
     width: 100%;
@@ -34,7 +35,7 @@ const ProfileBox = styled.div`
     justify-content: center;
     align-items: center;
 `;
-const InputBox = styled.div`
+const Box = styled.div`
     width: 100%; /* 최대 너비 설정 */
     height: 50px; /* 고정 높이값 */
     background-color: #fff;
@@ -48,7 +49,6 @@ const InputBox = styled.div`
     font-size: 16px; /* 고정된 글꼴 크기 설정 */
     padding: 0 10px; /* 내부 패딩 추가 */
 `;
-
 
 const Button = styled.button`
     width: 100%;
@@ -102,35 +102,47 @@ const Font_Content = styled.h1`
 
 
 const Profile = () => {
+    const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+    const [userData, setUserData] = useState(null); // 유저 데이터를 상태로 관리
+    useEffect(() => {
+        // API 호출
+        TokenAxios.get(`${API_BASE_URL}/v1/users/me`)
+            .then(response => {
+                // API 호출 성공 시 상태 업데이트
+                setUserData(response.data.result);
+            })
+            .catch(error => {
+                // 에러 처리
+                console.error('Error fetching user data:', error);
+            });
+    }, []); // 빈 배열을 전달하여 컴포넌트가 처음 렌더링될 때 한 번만 호출하도록 설정
+
     return (
         <Base>
-        <Container>
-            <Title>
-                <Font_Title>내 프로필</Font_Title>
-                <Font_Title></Font_Title>
-            </Title>
-       
-           
-            <Body>
-            <Title>
-                <Font_Content>닉네임</Font_Content>
-                <InputBox type="text" /> {/* text type의 input 상자 */}
-             
+            <Container>
+                <Title>
+                    <Font_Title>내 프로필</Font_Title>
+                    <Font_Title></Font_Title>
+                </Title>
                 
-            </Title>
-            </Body>
-            <Bottom>
-                <Font_Content>이메일</Font_Content>
-                <InputBox type="email" /> {/* email type의 input 상자 */}
-            </Bottom>
-            <Link to="/mypage">
-            <Button>돌아가기</Button> 
-</Link>
-          
-        </Container>
-    </Base>
+                <Body>
+                    <Title>
+                        <Font_Content>직업</Font_Content>
+                        <Box>{userData ? userData.social : ''}</Box>
+                    </Title>
+                </Body>
+                
+                <Bottom>
+                    <Font_Content>전화번호</Font_Content>
+                    <Box>{userData ? userData.phoneNum : ''}</Box>
+                </Bottom>
+
+                <Link to="/mypage">
+                    <Button>돌아가기</Button> 
+                </Link>
+            </Container>
+        </Base>
     );
 }
-
 
 export default Profile;
