@@ -6,6 +6,7 @@ import { TokenAxios } from "../../apis/CommonAxios";
 import { Button } from "@mui/material";
 import Swal from "sweetalert2";
 import withReactContent from 'sweetalert2-react-content';
+import Pagination from '@mui/material/Pagination';
 
 const MySwal = withReactContent(Swal);
 
@@ -23,10 +24,12 @@ const Container = styled.div`
     margin-top: 0px;
     max-width: 1200px;
     padding: 20px;
+    padding-bottom: 0; /* 아래쪽 패딩을 0으로 설정합니다. */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    padding-top: 5px; /* 위쪽 패딩을 원하는 간격으로 설정합니다. */
 `;
 
 const TitleBox = styled.div`
@@ -34,7 +37,7 @@ const TitleBox = styled.div`
     height: 50px;
     background-color: #F0F0F0;
     margin-top: 10px;
-    margin-bottom: 5px;
+    margin-bottom: 1px;
     border-radius: 10px;
     display: flex;
     justify-content: center;
@@ -51,11 +54,12 @@ const CustomButton = styled(Button)`
     width: 150px;
     height: 50px;
     font-size: 20px;
+
     align-self: center;
 `;
 
 const Title = styled.div`
-    margin-bottom: 7vh;
+    margin-bottom:3vh;
     margin-top: 10px;
 `;
 const Body = styled.div`
@@ -64,6 +68,10 @@ const Body = styled.div`
 const Bottom = styled.div`
     height: 200px;
     width: 100%;
+    display: flex;
+    justify-content: center; /* Center the pagination horizontally */
+    align-items: center; /* Center the pagination vertically */
+    margin-bottom: -10vh
 `;
 
 const Font_Title = styled.h1`
@@ -90,6 +98,8 @@ const Info = () => {
 
     const [notices, setNotices] = useState([]);
     const [selectedNotice, setSelectedNotice] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage] = useState(8); // Change this value according to your needs
 
     useEffect(() => {
         const fetchNotices = async () => {
@@ -118,7 +128,6 @@ const Info = () => {
             title: <strong>{notice.title}</strong>,
             html: (
                 <div>
-                    <p><strong>Category:</strong> {notice.category}</p>
                     <p><strong>Content:</strong> {notice.content}</p>
                     <p><strong>Updated At:</strong> {notice.updated_at}</p>
                 </div>
@@ -127,19 +136,36 @@ const Info = () => {
         });
     };
 
+    const handleChangePage = (event, newPage) => {
+        setCurrentPage(newPage);
+    };
+
+    const indexOfLastNotice = currentPage * rowsPerPage;
+    const indexOfFirstNotice = indexOfLastNotice - rowsPerPage;
+    const currentNotices = notices.slice(indexOfFirstNotice, indexOfLastNotice);
+
     return (
         <Base>
             <Container>
                 <Title>
                     <Font_Title>공지사항</Font_Title>
                 </Title>
-                {notices.map((notice) => (
+                {currentNotices.map((notice) => (
                     <TitleBox key={notice.noticeId} onClick={() => handleNoticeClick(notice.noticeId)}>
                         <Font_Content>
                             {notice.title}
                         </Font_Content>
                     </TitleBox>
                 ))}
+                <Bottom>
+                    <Pagination
+                        count={Math.ceil(notices.length / rowsPerPage)}
+                        page={currentPage}
+                        onChange={handleChangePage}
+                        shape="rounded"
+                        variant="outlined"
+                    />
+                </Bottom>
                 <Link to="/main">
                     <CustomButton>돌아가기</CustomButton>
                 </Link>

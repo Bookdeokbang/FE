@@ -256,13 +256,16 @@ const MainPage = () => {
     };
 
     const handleModalOpen = (notice) => {
+        const formatDate = (dateString) => {
+            const date = new Date(dateString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        };
         MySwal.fire({
             title: <strong>{notice.title}</strong>,
             html: (
                 <div>
-                    <p><strong>Category:</strong> {notice.category}</p>
                     <p><strong>Content:</strong> {notice.content}</p>
-                    <p><strong>Updated At:</strong> {notice.updated_at}</p>
+                    <p><strong>Updated At:</strong> {formatDate(notice.updated_at)}</p>
                 </div>
             ),
             showCloseButton: true,

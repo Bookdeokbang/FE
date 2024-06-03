@@ -126,9 +126,9 @@ const Infoadmin = () => {
     const { register, handleSubmit, setValue } = useForm();
 
     useEffect(() => {
-        fetchNotices(currentPage);
-    }, [currentPage]);
-    
+        fetchNotices();
+    }, []);
+
     const fetchNotices = async () => {
         try {
             const response = await TokenAxios.get(`${API_BASE_URL}/v1/admin/notices/all`);
@@ -138,17 +138,12 @@ const Infoadmin = () => {
         }
     };
 
-    useEffect(() => {
-        fetchNotices();
-    }, [rows]);
-
     const updateNotice = async (noticeId, data) => {
         try {
             const response = await TokenAxios.patch(`${API_BASE_URL}/v1/admin/notices/${noticeId}/update`, data);
             if (response.data.isSuccess) {
                 console.log("Updated notice:", response.data.result);
-                const updatedResponse = await TokenAxios.get(`${API_BASE_URL}/v1/admin/notices`);
-                setRows(updatedResponse.data.result);
+                fetchNotices(); // Refresh notices after update
             } else {
                 console.error("Error updating notice:", response.data.message);
                 Swal.fire("수정 실패", response.data.message, "error");
@@ -163,21 +158,7 @@ const Infoadmin = () => {
         setSearchTerm(e.target.value.toLowerCase()); // 검색어를 소문자로 변환
     };
 
-    
-
     const handleNotice = async () => {
-        const data = { title: '', content: '', pinned: false };
-        try {
-            const res = await TokenAxios.post(`${API_BASE_URL}/v1/admin/notices`, data);
-            if (res.data.result === "_OK") {
-                Swal.fire("등록 성공", "", "success");
-                fetchNotices();
-            }
-        } catch (error) {
-            console.error("Error adding notices:", error);
-            Swal.fire("등록 실패", "오류가 발생했습니다.", "error");
-        }
-    
         Swal.fire({
             title: '공지사항 등록',
             html:
@@ -191,21 +172,20 @@ const Infoadmin = () => {
                 const content = document.getElementById('content').value;
                 if (!title || !content) {
                     Swal.showValidationMessage('제목과 내용을 모두 입력해주세요.');
+                    return null;
                 }
                 return { title, content };
             }
-        }).then((result) => {
+        }).then(async (result) => {
             if (result.isConfirmed) {
                 const { title, content } = result.value;
-                console.log("제목:", title, "내용:", content);
-                // 서버에 데이터 전송
-                handleNoticeSubmit(title, content);
+                await handleNoticeSubmit(title, content);
             } else {
                 Swal.fire("공지사항이 저장되지 않았습니다.", "", "error");
             }
         });
     };
-    
+
     const handleNoticeSubmit = async (title, content) => {
         try {
             const data = { title, content, pinned: false };
@@ -219,7 +199,7 @@ const Infoadmin = () => {
             Swal.fire("등록 실패", "오류가 발생했습니다.", "error");
         }
     };
-    
+
     const handleNameClick = (title, content, id) => {
         Swal.fire({
             title: '공지사항 내용',
@@ -250,20 +230,19 @@ const Infoadmin = () => {
         });
     };
 
-   // getCurrentRows 함수 수정
-const getCurrentRows = () => {
-    const indexOfLastRow = currentPage * rowsPerPage;
-    const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-    return rows.slice(indexOfFirstRow, indexOfLastRow);
-};
-  const handlePageChange = (event, value) => {
+    const getCurrentRows = () => {
+        const indexOfLastRow = currentPage * rowsPerPage;
+        const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+        return rows.slice(indexOfFirstRow, indexOfLastRow);
+    };
+
+    const handlePageChange = (event, value) => {
         setCurrentPage(value);
     };
 
     return (
         <PageContainer>
             <SearchContainer>
-       
                 <NoticeButton onClick={handleNotice}>공지사항 작성하기</NoticeButton>
             </SearchContainer>
             <TableContainer>
@@ -275,7 +254,7 @@ const getCurrentRows = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {rows.map((row, index) => (
+                        {getCurrentRows().map((row, index) => (
                             <tr key={index} onClick={() => handleNameClick(row.title, row.content, row.id)}>
                                 <StyledTableCell>{row.title}</StyledTableCell>
                                 <StyledTableCell>{row.content}</StyledTableCell>
@@ -291,7 +270,6 @@ const getCurrentRows = () => {
                 shape="rounded"
                 variant="outlined"
             />
-            
             <Link to="/mainadmin">
                 <Gramary>Gramary</Gramary>
             </Link>
@@ -333,8 +311,8 @@ const getCurrentRows = () => {
                             <MenuItem color="neutral">단어 데이터 관리</MenuItem>
                         </Link>
                         <Link to="/infoadmin">
-                <MenuItem color="neutral">공지사항 관리</MenuItem>
-            </Link>
+                            <MenuItem color="neutral">공지사항 관리</MenuItem>
+                        </Link>
                     </Menu>
                 </Dropdown>
                 <Dropdown>

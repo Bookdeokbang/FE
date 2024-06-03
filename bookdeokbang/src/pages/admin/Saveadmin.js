@@ -11,6 +11,8 @@ import Table from '@mui/joy/Table';
 import { Link, useParams } from "react-router-dom"; 
 import { TokenAxios } from "../../apis/CommonAxios";
 import Swal from 'sweetalert2';
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
 
 const PageContainer = styled.div`
     position: relative;
@@ -38,7 +40,6 @@ const Gramary = styled.div`
     font-family: englogo;
     color: #000; /* 검정색으로 설정 */
 `;
-
 
 const StyledLink = styled(Link)`
     color: #000;
@@ -81,6 +82,8 @@ const Saveadmin = () => {
     const { sentenceId } = useParams();
     const [generatedSentence, setGeneratedSentence] = useState("");
     const [sentenceInfo, setSentenceInfo] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage] = useState(10); // 페이지당 행 수
     const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
@@ -104,6 +107,16 @@ const Saveadmin = () => {
             console.error("Error fetching sentence info:", error);
             Swal.fire("오류", "문장 정보를 가져오는 중 오류가 발생했습니다.", "error");
         }
+    };
+
+    // 현재 페이지의 행 가져오기
+    const indexOfLastRow = currentPage * rowsPerPage;
+    const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+    const currentRows = sentenceInfo.slice(indexOfFirstRow, indexOfLastRow);
+
+    // 페이지 변경 핸들러
+    const handlePageChange = (event, value) => {
+        setCurrentPage(value);
     };
 
     const handleGenerateSentence = async () => {
@@ -149,7 +162,7 @@ const Saveadmin = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {sentenceInfo.map((sentence, index) => (
+                        {currentRows.map((sentence, index) => (
                             <tr key={index}>
                                 <StyledTableCell>{sentence.content}</StyledTableCell>
                                 <StyledTableCell>{sentence.grammar}</StyledTableCell>
@@ -158,6 +171,15 @@ const Saveadmin = () => {
                     </tbody>
                 </StyledTable>
             </TableContainer>
+            <Stack spacing={2}>
+                <Pagination
+                    count={Math.ceil(sentenceInfo.length / rowsPerPage)}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    shape="rounded"
+                    variant="outlined"
+                />
+            </Stack>
             <Link to="/mainadmin">
                 <Gramary>Gramary</Gramary>
             </Link>
