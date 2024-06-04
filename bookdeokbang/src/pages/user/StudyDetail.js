@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import styled from "styled-components";
 import theme from '../../styles/commonTheme';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useLocation } from 'react-router-dom';
 import { TokenAxios } from "../../apis/CommonAxios";
 import { Button } from "@mui/material";
 import Swal from 'sweetalert2';
@@ -106,81 +106,52 @@ const Font_Body = styled.h1`
 
 const StudyDetail = () => {
     const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
-    const { contentAndSentenceId } = useParams();
-    const [sentence, sentenceId] = contentAndSentenceId.split('&');
-
-    const StudytNotewrite = async () => {
-        try {
-            const res = await TokenAxios.post(`${API_BASE_URL}/v1/notes/memo`);
-            const data = res.data.result;
-            console.log(data);
-        } catch (e) {
-            console.log("fail");
-        }
-    }
-
-    const StudyNoteAll = async () => {
-        try {
-            const res = await TokenAxios.get(`${API_BASE_URL}/v1/notes/all`);
-            const response = res.data.result;
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    const SaveSutdyNote = async() => {
-        try {
-            const title = 'Sample Title';
-            const content = 'Sample content for the note';
-
-            const [res1, res2] = await axios.all([
-                TokenAxios.post(`${API_BASE_URL}/v1/sentences/note`, {}, {
-                    params: {
-                        sentenceId: sentenceId
-                    },
-                    responseType: 'json'
-                }),
-                TokenAxios.post(`${API_BASE_URL}/v1/notes/memo`, {
-                    sentenceId: sentenceId,
-                    title: title, // Use dynamic title
-                    content: content // Use dynamic content
-                }, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    responseType: 'json'
-                })
-            ]);
-
-            if (res1.data.isSuccess && res2.data.isSuccess) {
-                MySwal.fire({
-                    title: '저장되었습니다',
-                    icon: 'success',
-                    confirmButtonText: '확인'
-                });
-            } else {
-                console.error('Save failed:', res1.data, res2.data);
-                MySwal.fire({
-                    title: '저장 실패',
-                    text: '노트를 찾을 수 없습니다',
-                    icon: 'error',
-                    confirmButtonText: '확인'
-                });
-            }
-        } catch (e) {
-            console.error(e);
-            MySwal.fire({
-                title: '저장 실패',
-                text: '오류가 발생했습니다. 나중에 다시 시도하세요.',
-                icon: 'error',
-                confirmButtonText: '확인'
-            });
-        }
-    }
+    const { sentenceid } = useParams();
+    const { search } = useLocation();
+    const queryParams = new URLSearchParams(search);
+    const title = queryParams.get('title');
+    const content = queryParams.get('content');
+    const [noteItem, setNoteItem] = useState(null);
+    const [memoContent, setMemoContent] = useState(content || '');
+    const [isLoading, setIsLoading] = useState(true);
+    const memoRef = useRef();
 
     useEffect(() => {
-        StudyNoteAll();
-    }, []);
+        const fetchNotes = async () => {
+            try {
+                const all_res = await TokenAxios.get(`${API_BASE_URL}/v1/notes/all`);
+                const all_response = all_res.data.result;
+                const all_item = all_response.find(item => item.sentenceId == sentenceid);
+                setNoteItem(all_item);
+            } catch (e) {
+                console.log(e);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchNotes();
+    }, [API_BASE_URL, sentenceid]);
+
+    const saveStudyNote = async (item) => {
+        const content = memoRef.current.value;
+    
+        try {
+            await TokenAxios.patch(`${API_BASE_URL}/v1/notes/${item.id}/update`, {
+                sentenceId: item.sentenceId,
+                title: item.name,
+                content: content
+            });
+    
+            setNoteItem({
+                ...item,
+                content: content
+            });
+        } catch (e) {
+            console.log('Patch request failed:', e);
+        }
+    };
+    
+    
 
     return (
         <Base>
@@ -189,12 +160,21 @@ const StudyDetail = () => {
                     <Font_Title>학습 노트</Font_Title>
                 </Title>
                 <WhiteBox1>
-                    <Font_Body>{sentence}</Font_Body>
+                    <Font_Body>
+                        {isLoading ? (
+                            "로딩 중..."
+                        ) : (
+                            noteItem ? (
+                                noteItem.name
+                            ) : (
+                                title
+                            )
+                        )}
+                    </Font_Body>
                 </WhiteBox1>
-                <Memo placeholder="메모를 입력하세요" />
-                <CustomButton onClick={SaveSutdyNote}>
-                    저장하기
-                </CustomButton>
+                <Memo ref={memoRef} placeholder="메모를 입력하세요" defaultValue={memoContent} />
+                <CustomButton onClick={() => saveStudyNote(noteItem)}>저장하기</CustomButton>
+
                 <Link to="/main">
                     <CustomButton>
                         학습종료

@@ -35,6 +35,7 @@ const WhiteBox1 = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
+    
 `;
 
 const SaveBox = styled.div`
@@ -79,7 +80,7 @@ const Font_Body = styled.h1`
     font-family: 'engLogo';
     margin: 5;
     text-align: center;
-    height: 100%;
+    line-height: 120px; 
 `;
 
 const Similar = () => {

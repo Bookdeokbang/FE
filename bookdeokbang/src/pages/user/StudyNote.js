@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from "styled-components";
 import theme from '../../styles/commonTheme';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { TokenAxios } from "../../apis/CommonAxios";
 import { Button } from "@mui/material";
 import Swal from "sweetalert2";
@@ -19,6 +19,7 @@ const Base = styled.div`
     align-items: center;
     background-color: ${theme.colors.beige};
 `;
+
 const Container = styled.div`
     width: 100%;
     margin-top: 0px;
@@ -42,6 +43,7 @@ const TitleBox = styled.div`
     align-items: center;
     border: 0.8px solid ${theme.colors.black};
 `;
+
 const CustomButton = styled(Button)`
     background-color: transparent; /* 배경색 설정 */
     color: #000; /* 글씨 색상 설정 */
@@ -60,13 +62,6 @@ const Title = styled.div`
     margin-bottom: 7vh;
     margin-top: 10px;
 `;
-const Body = styled.div`
-    width: 100%;
-`;
-const Bottom = styled.div`
-    height: 200px;
-    width: 100%;
-`;
 
 const Font_Title = styled.h1`
     font-size: 25px;
@@ -75,11 +70,6 @@ const Font_Title = styled.h1`
     text-align: center;
 `;
 
-const Font_Body = styled.h1`
-    font-size: 20px;
-    font-family: 'Logo';
-    text-align: left;
-`;
 const Font_Content = styled.h1`
     font-size: 15px;
     font-family: 'Logo';
@@ -89,9 +79,9 @@ const Font_Content = styled.h1`
 
 const StudyNote = () => {
     const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+    const navigate = useNavigate();
 
     const [notes, setNotes] = useState([]);
-    const [selectedNote, setSelectedNote] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage] = useState(7); // 페이지 당 행 수
 
@@ -110,25 +100,27 @@ const StudyNote = () => {
     const handleNoteClick = async (noteId) => {
         try {
             const res = await TokenAxios.get(`${API_BASE_URL}/v1/notes/${noteId}`);
-            setSelectedNote(res.data.result);
-            handleModalOpen(res.data.result);
+            const note = res.data.result;
+            MySwal.fire({
+                title: <strong>{note.name}</strong>,
+                html: (
+                    <div>
+                        <p><strong>Title:</strong> {note.name}</p>
+                        <p><strong>Content:</strong> {note.content}</p>
+                    </div>
+                ),
+                showCloseButton: true,
+                showCancelButton: true,
+                confirmButtonText: '수정하기',
+                cancelButtonText: '닫기'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    navigate(`/studydetail/${note.sentenceId}?title=${note.name}&content=${note.content}`);
+                }
+            });
         } catch (error) {
             console.error("노트 detail 가져오기 실패:", error);
         }
-    };
-
-    const handleModalOpen = (note) => {
-        MySwal.fire({
-            title: <strong>{note.title}</strong>,
-            html: (
-                <div>
-                    <p><strong>Title:</strong> {note.title}</p>
-                    <p><strong>Content:</strong> {note.content}</p>
-                    <p><strong>Updated At:</strong> {note.updated_at}</p>
-                </div>
-            ),
-            showCloseButton: true,
-        });
     };
 
     const indexOfLastRow = currentPage * rowsPerPage;
@@ -145,14 +137,13 @@ const StudyNote = () => {
                 <Title>
                     <Font_Title>학습노트</Font_Title>
                 </Title>
-                {currentRows.map((note) => (
-                    <TitleBox key={note.noteId} onClick={() => handleNoteClick(note.noteId)}>
+                {currentRows.map((notes) => (
+                    <TitleBox key={notes.id} onClick={() => handleNoteClick(notes.id)}>
                         <Font_Content>
-                            {note.title}
+                            {notes.name}
                         </Font_Content>
                     </TitleBox>
                 ))}
-               
                 <Link to="/main">
                     <CustomButton>돌아가기</CustomButton>
                 </Link>
