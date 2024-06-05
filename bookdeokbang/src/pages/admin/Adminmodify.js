@@ -229,6 +229,9 @@ const Adminmodify = () => {
             <Link to="/dataadmin">
                 <MenuItem color="neutral">데이터 관리</MenuItem>
             </Link>
+            <Link to="/modeladmin">
+                <MenuItem color="neutral">학습 관리</MenuItem>
+            </Link>
         </Menu>
     </Dropdown>
 </DropdownGroup>

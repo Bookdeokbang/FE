@@ -126,6 +126,7 @@ const Mainadmin = () => {
                     <NavigationButton icon={<DeveloperBoardOutlinedIcon />} label="AI" />
                     <NavigationButton to="/aiadmin" label="모델 정보 및 관리" />
                     <NavigationButton to="/dataadmin" label="데이터 관리" />
+                    <NavigationButton to="/modeladmin" label="학습 관리" />
                 </StyledButtonGroup>
             </CenterGroup>
 

@@ -170,7 +170,11 @@ const Modeladmin = () => {
                 formData.append('model_name', modelName);
                 formData.append('file', file);
     
-                TokenAxios.post(`${API_BASE_URL}/train`, formData)
+                TokenAxios.post(`${API_BASE_URL}/train`, formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                })
                     .then(response => {
                         console.log("Train response:", response.data);
                         SwalWithReactContent.fire({
@@ -195,7 +199,6 @@ const Modeladmin = () => {
     
     return (
         <PageContainer>
-            {/* 학습시키기 버튼 */}
             <Button onClick={handleTrainModel}>학습시키기</Button>
           
             <TableContainer>
@@ -283,7 +286,12 @@ const Modeladmin = () => {
                         <Link to="/aiadmin">
                             <MenuItem color="neutral">모델 정보 및 관리</MenuItem>
                         </Link>
-                        
+                        <Link to="/dataadmin">
+                            <MenuItem color="neutral">데이터 관리</MenuItem>
+                        </Link>
+                        <Link to="/modeladmin">
+                            <MenuItem color="neutral">학습 관리</MenuItem>
+                        </Link>
                     </Menu>
                 </Dropdown>
             </DropdownGroup>

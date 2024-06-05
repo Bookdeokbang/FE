@@ -232,8 +232,11 @@ const Memberinfoadmin = () => {
                             <MenuItem color="neutral">모델 정보 및 관리</MenuItem>
                         </Link>
                         <Link to="/dataadmin">
-                <MenuItem color="neutral">데이터 관리</MenuItem>
-            </Link>
+                            <MenuItem color="neutral">데이터 관리</MenuItem>
+                        </Link>
+                        <Link to="/modeladmin">
+                            <MenuItem color="neutral">학습 관리</MenuItem>
+                        </Link>
                     </Menu>
                 </Dropdown>
             </DropdownGroup>
