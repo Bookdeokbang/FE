@@ -84,6 +84,8 @@ const Saveadmin = () => {
     const [sentenceInfo, setSentenceInfo] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [rowsPerPage] = useState(10); // 페이지당 행 수
+    const [pageSize] = useState(20); // 페이지당 아이템 수
+
     const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
     useEffect(() => {
@@ -92,27 +94,40 @@ const Saveadmin = () => {
 
     const fetchSentenceInfo = async () => {
         try {
-            const response = await TokenAxios.get(`${API_BASE_URL}/v1/admin/sentences`);
-            if (response.data && response.data.result) {
-                const modifiedResult = response.data.result.map(sentence => ({
-                    content: sentence.content,
-                    grammar: sentence.grammar
-                }));
-                setSentenceInfo(modifiedResult);
-            } else {
-                console.error("Error fetching sentence info:", response.data);
-                Swal.fire("오류", "문장 정보를 가져오는 중 오류가 발생했습니다.", "error");
+            let currentPage = 1;
+            let allSentences = [];
+            while (true) {
+                const response = await TokenAxios.get(`${API_BASE_URL}/v1/admin/sentences?pageNo=${currentPage}&pageSize=${pageSize}`);
+                if (response.data && response.data.isSuccess) {
+                    const { content } = response.data.result;
+                    allSentences = allSentences.concat(content);
+                    currentPage++;
+                    // 만약 더 이상 가져올 데이터가 없으면 종료
+                    if (!content || content.length === 0 || currentPage > Math.ceil(content.length / pageSize)) break;
+                } else {
+                    console.error("Error fetching sentence info:", response.data);
+                    Swal.fire("오류", "문장 정보를 가져오는 중 오류가 발생했습니다.", "error");
+                    break;
+                }
             }
+            // 문장 정보 설정
+            const modifiedResult = allSentences.map(sentence => ({
+                content: sentence.content,
+                grammar: sentence.grammar
+            }));
+            setSentenceInfo(modifiedResult);
         } catch (error) {
             console.error("Error fetching sentence info:", error);
             Swal.fire("오류", "문장 정보를 가져오는 중 오류가 발생했습니다.", "error");
         }
     };
+    
+// 현재 페이지의 행 가져오기
+const indexOfLastRow = currentPage * pageSize;
+const indexOfFirstRow = indexOfLastRow - pageSize;
+const currentRows = sentenceInfo.slice(indexOfFirstRow, indexOfLastRow);
 
-    // 현재 페이지의 행 가져오기
-    const indexOfLastRow = currentPage * rowsPerPage;
-    const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-    const currentRows = sentenceInfo.slice(indexOfFirstRow, indexOfLastRow);
+
 
     // 페이지 변경 핸들러
     const handlePageChange = (event, value) => {
@@ -233,6 +248,9 @@ const Saveadmin = () => {
                         <Link to="/aiadmin">
                             <MenuItem color="neutral">모델 정보 및 관리</MenuItem>
                         </Link>
+                        <Link to="/dataadmin">
+                <MenuItem color="neutral">데이터 관리</MenuItem>
+            </Link>
                     </Menu>
                 </Dropdown>
             </DropdownGroup>

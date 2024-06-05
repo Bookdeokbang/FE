@@ -31,6 +31,8 @@ import Askadmin from "./pages/admin/Askadmin";
 import Saveadmin from "./pages/admin/Saveadmin";
 import Wordadmin from "./pages/admin/Wordadmin";
 import Aiadmin from "./pages/admin/Aiadmin";
+import Modeladmin from "./pages/admin/Modeladmin";
+import Dataadmin from "./pages/admin/Dataadmin";
 
 const Router = () => {
 
@@ -68,8 +70,8 @@ const Router = () => {
                 <Route path="/saveadmin" element={<Saveadmin/>}/>
                 <Route path="/Wordadmin" element={<Wordadmin/>}/>
                 <Route path="/Aiadmin" element={<Aiadmin/>}/>
-
-
+                <Route path="/modeladmin" element={<Modeladmin/>}/>
+                <Route path="/dataadmin" element={<Dataadmin/>}/>
             </Routes>
         </BrowserRouter>
     );

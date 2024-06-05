@@ -321,6 +321,9 @@ const Infoadmin = () => {
                         <Link to="/aiadmin">
                             <MenuItem color="neutral">모델 정보 및 관리</MenuItem>
                         </Link>
+                        <Link to="/dataadmin">
+                <MenuItem color="neutral">데이터 관리</MenuItem>
+            </Link>
                     </Menu>
                 </Dropdown>
             </DropdownGroup>
