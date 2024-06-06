@@ -119,88 +119,9 @@ const Modeladmin = () => {
 
         fetchModelFiles();
     }, []);
-
-    const handleTrainModel = () => {
-        SwalWithReactContent.fire({
-            title: "모델 학습 시작",
-            html:
-                '<input class="swal2-input" type="number" placeholder="Epoch">' +
-                '<input class="swal2-input" placeholder="Model Name">' +
-                '<div id="file-input-container" style="text-align: center; margin-top: 20px;">' +
-                '   <label for="swal-input3" style="padding: 10px 20px; background-color: ${theme.colors.primary}; color: black; border-radius: 4px; cursor: pointer;">파일 선택</label>' +
-                '   <input id="swal-input3" class="swal2-file" type="file" accept=".csv" style="display: none;">' +
-                '</div>',
-            focusConfirm: false,
-            preConfirm: () => {
-                const epoch = parseInt(SwalWithReactContent.getPopup().querySelectorAll(".swal2-input")[0].value);
-                const modelName = SwalWithReactContent.getPopup().querySelectorAll(".swal2-input")[1].value;
-                const file = SwalWithReactContent.getPopup().querySelector(".swal2-file").files[0];
-                setSelectedFileName(file ? file.name : ""); 
-                return { epoch, modelName, file };
-            }
-        }).then(result => {
-            if (result.isConfirmed) {
-                const { epoch, modelName, file } = result.value;
-                if (isNaN(epoch) || epoch <= 0) {
-                    SwalWithReactContent.fire({
-                        icon: 'error',
-                        title: '올바른 에포크 값을 입력하세요!',
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                    return;
-                }
-                console.log("Epoch:", epoch);
-                console.log("Model Name:", modelName);
-                console.log("File:", file);
-                console.log("Selected File Name:", selectedFileName); 
-    
-                if (!file) {
-                    SwalWithReactContent.fire({
-                        icon: 'error',
-                        title: '파일을 선택하세요!',
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
-                    return;
-                }
-    
-                const formData = new FormData();
-                formData.append('epoch', epoch);
-                formData.append('model_name', modelName);
-                formData.append('file', file);
-    
-                TokenAxios.post(`${API_BASE_URL}/train`, formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                })
-                    .then(response => {
-                        console.log("Train response:", response.data);
-                        SwalWithReactContent.fire({
-                            icon: 'success',
-                            title: '모델 학습을 시작합니다!',
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
-                    })
-                    .catch(error => {
-                        console.error("Error during model training:", error);
-                        SwalWithReactContent.fire({
-                            icon: 'error',
-                            title: '모델 학습 중 오류가 발생했습니다!',
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
-                    });
-            }
-        });
-    };
     
     return (
-        <PageContainer>
-            <Button onClick={handleTrainModel}>학습시키기</Button>
-          
+        <PageContainer>          
             <TableContainer>
                 <StyledTable>
                     <thead>
