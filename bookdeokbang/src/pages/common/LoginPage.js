@@ -11,7 +11,6 @@ import logo from "../../assets/images/logo.png";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 
 // etc
-import box from "../../components/atoms/input";
 import korfonts from "../../assets/fonts/BMHANNAAir_ttf.ttf";
 import engfonts from "../../assets/fonts/Schoolbell-Regular.ttf";
 import theme from "../../styles/commonTheme";
@@ -53,10 +52,9 @@ const Body = styled.div`
 const Title = styled.div`
   display: flex;
   justify-content: center;
-  display: flex;
   flex-direction: column;
   align-items: center;
-  margin_bottom: 30%;
+  margin-bottom: 30%;
 `;
 
 const Title_Bottom = styled.div`
@@ -75,13 +73,13 @@ const Text3 = styled.h1`
   font-size: 10px;
   font-family: "Logo";
   margin: 0;
-  white-space: nowrap; /* 텍스트가 한 줄에 표시되도록 설정 */
+  white-space: nowrap;
 `;
 const TextContatiner = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  align-items: center; /* 세로 중앙 정렬 추가 */
+  align-items: center;
   text-align: right;
   margin-bottom: 5px;
   margin-left: auto;
@@ -97,19 +95,21 @@ const LoginContainer = styled.div``;
 
 const StyledSwitchLabelsWrapper = styled.div`
   display: flex;
-  font-size:14px;
-  font-family:logo;
+  font-size: 14px;
+  font-family: logo;
   align-items: center;
   justify-content: flex-end;
-  width: 100%; /* StyledSwitchLabels를 부모 컨테이너에 꽉 차게 설정 */
+  width: 100%;
 `;
 
 const Login = () => {
   const { register, handleSubmit } = useForm();
   const [mode, setMode] = useState("user");
+
   const handleModeChange = (isAdmin) => {
     setMode(isAdmin ? "admin" : "user");
   };
+
   const handleSignUp = () => {
     navigate("/signUp");
   };
@@ -127,7 +127,7 @@ const Login = () => {
         );
         console.log(res.data.result.data);
         const token = res.data.result.accessToken;
-        
+
         console.log("success");
         localStorage.setItem("accessToken", token);
         navigate("/main");
@@ -139,8 +139,7 @@ const Login = () => {
         const tokenData = res.data.result;
         console.log(data);
         localStorage.setItem("accessToken", tokenData.accessToken);
-      
-      
+
         navigate("/mainadmin");
       }
     } catch (e) {
@@ -195,13 +194,12 @@ const Login = () => {
             <Login_Input
               id="password"
               label="비밀번호"
+              type="password"
               placeholder="password를 입력하세요."
               {...register("password")}
             />
           </LoginContainer>
-          <Button type="submit">
-            로그인
-          </Button>
+          <Button type="submit">로그인</Button>
           <Button variant="text" onClick={handleSignUp}>
             회원가입
           </Button>

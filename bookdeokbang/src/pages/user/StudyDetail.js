@@ -7,6 +7,8 @@ import { Button } from "@mui/material";
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
+
 
 const MySwal = withReactContent(Swal);
 
@@ -115,6 +117,8 @@ const StudyDetail = () => {
     const [memoContent, setMemoContent] = useState(content || '');
     const [isLoading, setIsLoading] = useState(true);
     const memoRef = useRef();
+    const navigate = useNavigate();
+
 
     useEffect(() => {
         const fetchNotes = async () => {
@@ -141,13 +145,33 @@ const StudyDetail = () => {
                 title: item.name,
                 content: content
             });
-    
             setNoteItem({
                 ...item,
                 content: content
             });
+            MySwal.fire({
+                html: (
+                    <div>
+                        <p><strong>저장 되었습니다.</strong></p>
+                    </div>
+                ),
+                showCloseButton: true,
+                
+            }).then(result => {
+                if (result.isConfirmed) {
+                    navigate('/main');
+                }
+            });   
         } catch (e) {
             console.log('Patch request failed:', e);
+            MySwal.fire({
+                html: (
+                    <div>
+                        <p><strong>저장 실패</strong></p>
+                    </div>
+                ),
+                showCloseButton: true,
+            })
         }
     };
     

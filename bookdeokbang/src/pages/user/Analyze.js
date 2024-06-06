@@ -168,11 +168,28 @@ const Analyze = () => {
     }, [analysisResult]);
 
 
-    const handleSimilarSentenceRecommendation = () => {
+    const fetchDataUntilUnique = async (grammar, difficulty) => {
+        let isUnique = false;
+        let data = [];
+        
+        while (!isUnique) {
+          const res = await TokenAxios.get(`${API_BASE_URL}/v1/sentences/${grammar}/${difficulty}/3/recommend`);
+          data = res.data.result;
+      
+          // content 값이 서로 다른지 검사
+          const contents = data.map(item => item.content);
+          isUnique = new Set(contents).size === contents.length;
+        }
+      
+        return data;
+    };
+
+    const handleSimilarSentenceRecommendation = async() => {
         setLoading(true);
-        setTimeout(() => {
-            navigate(`/similar/${grammar}/${difficulty}`);
+        setTimeout(async() => {
+            const data = await fetchDataUntilUnique(grammar, difficulty);
             setLoading(false);
+            navigate(`/similar/`, { state: data });
         }, 3000);
     };
 
@@ -184,7 +201,11 @@ const Analyze = () => {
                     content: analysisResult.grammar // Use dynamic content
                 }, {
                 });
-                navigate(`/studydetail/${sentenceId}?title=${encodeURIComponent(analysisResult.content)}&content=${encodeURIComponent(analysisResult.grammar)}`);
+                setLoading(true);
+                setTimeout(() => {
+                    navigate(`/studydetail/${sentenceId}?title=${encodeURIComponent(analysisResult.content)}&content=${encodeURIComponent(analysisResult.grammar)}`);
+                    setLoading(false);
+                }, 2000);
                 
             } catch (e) {
                 console.log("fail");

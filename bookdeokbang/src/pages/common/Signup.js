@@ -15,7 +15,7 @@ import { FaEyeSlash } from "react-icons/fa";
 import { Button } from "@mui/material";
 
 const Base = styled.div`
-  max-width: 1200px;
+  max-width: 100%;
   height: 100vh;
   display: flex;
   justify-content: center;
