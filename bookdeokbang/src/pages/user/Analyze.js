@@ -194,16 +194,18 @@ const Analyze = () => {
     };
 
     const handleStudytDetail = async () => {
+            setLoading(true);
             try {
-                TokenAxios.post(`${API_BASE_URL}/v1/sentences/note`, {
+                const res = await TokenAxios.post(`${API_BASE_URL}/v1/sentences/note`, {
                     sentenceId: sentenceId,
                     title: analysisResult.content, // Use dynamic title
                     content: analysisResult.grammar // Use dynamic content
                 }, {
                 });
-                setLoading(true);
+                console.log(res);
+                const noteid = res.data.result;
                 setTimeout(() => {
-                    navigate(`/studydetail/${sentenceId}?title=${encodeURIComponent(analysisResult.content)}&content=${encodeURIComponent(analysisResult.grammar)}`);
+                    navigate(`/studydetail/${sentenceId}?title=${encodeURIComponent(analysisResult.content)}&content=${encodeURIComponent(analysisResult.grammar)}&noteid=${noteid}`);
                     setLoading(false);
                 }, 2000);
                 

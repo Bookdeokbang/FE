@@ -113,6 +113,7 @@ const StudyDetail = () => {
     const queryParams = new URLSearchParams(search);
     const title = queryParams.get('title');
     const content = queryParams.get('content');
+    const noteid = queryParams.get('noteid');
     const [noteItem, setNoteItem] = useState(null);
     const [memoContent, setMemoContent] = useState(content || '');
     const [isLoading, setIsLoading] = useState(true);
@@ -123,10 +124,9 @@ const StudyDetail = () => {
     useEffect(() => {
         const fetchNotes = async () => {
             try {
-                const all_res = await TokenAxios.get(`${API_BASE_URL}/v1/notes/all`);
+                const all_res = await TokenAxios.get(`${API_BASE_URL}/v1/notes/${noteid}`);
                 const all_response = all_res.data.result;
-                const all_item = all_response.find(item => item.sentenceId == sentenceid);
-                setNoteItem(all_item);
+                setNoteItem(all_response);
             } catch (e) {
                 console.log(e);
             } finally {

@@ -98,16 +98,17 @@ const Similar = () => {
     const handleStudytDetail = async (num) => {
         try {
             setLoading(true);
-            await TokenAxios.post(`${API_BASE_URL}/v1/sentences/note`, {
+            const res = await TokenAxios.post(`${API_BASE_URL}/v1/sentences/note`, {
                 sentenceId: state[num].id,
                 title: state[num].content, // Use dynamic title
                 content: state[num].grammar // Use dynamic content
             }, {
             });
+            console.log(res);
+            const noteid = res.data.result;
             setTimeout(() => {
-                navigate(`/studydetail/${state[num].id}?title=${encodeURIComponent(state[num].content)}&content=${encodeURIComponent(state[num].grammar)}`);
+                navigate(`/studydetail/${state[num].id}?title=${encodeURIComponent(state[num].content)}&content=${encodeURIComponent(state[num].grammar)}&noteid=${noteid}`);
                 setLoading(false);
-
             }, 2000);
 
         } catch (e) {

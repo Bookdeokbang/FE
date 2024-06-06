@@ -115,7 +115,7 @@ const StudyNote = () => {
                 cancelButtonText: '닫기'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    navigate(`/studydetail/${note.sentenceId}?title=${note.name}&content=${note.content}`);
+                    navigate(`/studydetail/${note.sentenceId}?title=${note.name}&content=${note.content}&noteid=${note.id}`);
                 }
             });
         } catch (error) {
